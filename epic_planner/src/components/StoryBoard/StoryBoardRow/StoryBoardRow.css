@@ -1,0 +1,9 @@
+.story-board__row-header {
+  display: flex;
+  flex-direction: column;
+  grid-column-start: 1;
+  background-color: rgb(123, 158, 171);
+  margin: 5px;
+  margin-right: 10px;
+  padding: 0px;
+}

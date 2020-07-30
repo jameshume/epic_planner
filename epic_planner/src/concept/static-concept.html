@@ -1,0 +1,156 @@
+<html>
+<head>
+	<style>
+		.story-board {
+			display: grid;
+			grid-template-columns: repeat(4, 110px) 28px;
+			width: 100vw;
+			grid-auto-rows: min-content;
+		}
+
+		.story-board__scrollable::-webkit-scrollbar {
+			width: 5px;
+		}
+
+		.story-board__scrollable::-webkit-scrollbar-track {
+		  background: #f1f1f1;
+		}
+
+		.story-board__scrollable::-webkit-scrollbar-thumb {
+		  background: #888;
+		}
+
+		.story-board__scrollable::-webkit-scrollbar-thumb:hover {
+		  background: #555;
+		}
+
+		.story-board__item, .story-board__col-header {
+			margin-bottom: 5px;
+			margin-top: 5px;
+			height: 100px;
+			width: 100px;
+			background-color: lightgray;
+			overflow-y: auto;
+		}
+		
+		.story-board__col-header {
+			background-color: rgb(186, 210, 219);
+		}
+
+		.story-board__inserter-col {
+			margin: 5px;
+			padding: 0px;
+			height: 100px;
+			background-color: gray;
+			overflow-x: hidden;
+			color: white;
+			font-weight: bold;
+			text-align: center;
+		}
+
+
+		.story-board__inserter-row {
+			margin-bottom: 5px;
+			margin-top: 5px;
+			margin-right: 10px;
+			padding: 0px;
+			width: calc(100% - 10px);
+			background-color: gray;
+			overflow-y: hidden;
+			color: white;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		.story-board__column {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.story-board__row-header {
+			display: flex;
+			flex-direction: column;
+			grid-column-start: 1;
+			background-color: rgb(123, 158, 171);
+			margin: 5px;
+			margin-right: 10px;
+			padding: 0px;
+		}
+
+		.nobg {
+			background-color: unset;
+		}
+
+		.spacer {
+			margin: 5px;
+			height: 100px;
+			width: 100px;
+			display: hidden;
+		}
+
+
+	</style>
+</head>
+
+<body>
+	<div class="story-board">
+		<div class="spacer"></div>
+		<div class="story-board__col-header story-board__scrollable" contenteditable="true">Heading?</div>
+		<div class="story-board__col-header story-board__scrollable" contenteditable="true">Heading?</div>
+		<div class="story-board__col-header story-board__scrollable" contenteditable="true">Heading?</div>
+		<div class="story-board__inserter-col">+</div>
+		
+
+		<!-- ROW #1 -->
+		<div class="story-board__row-header" contenteditable="true">
+			Title
+		</div>
+		<!-- ROW #1 COL #1 -->
+		<div class="story-board__column">
+			<div class="story-board__item story-board__scrollable" contenteditable="true">1</div>
+			<div class="story-board__item story-board__scrollable" contenteditable="true">2</div>
+			<div class="story-board__item story-board__scrollable" contenteditable="true">3</div>
+			<div class="story-board__inserter-row">+</div>
+		</div>
+		<!-- ROW #1 COL #2 -->
+		<div class="story-board__column">
+			<div class="story-board__item story-board__scrollable" contenteditable="true">4</div>
+			<div class="story-board__inserter-row">+</div>
+		</div>
+		<!-- ROW #1 COL #3 -->
+		<div class="story-board__column">
+			<div class="story-board__item story-board__scrollable" contenteditable="true">5</div>
+			<div class="story-board__item story-board__scrollable" contenteditable="true">6</div>
+			<div class="story-board__inserter-row">+</div>
+		</div>
+
+
+		<!-- ROW #2 -->
+		<div class="story-board__row-header" contenteditable="true">
+			Title
+		</div>
+		<div class="story-board__column">
+			<div class="story-board__item story-board__scrollable" contenteditable="true">1</div>
+			<div class="story-board__item story-board__scrollable" contenteditable="true">2</div>
+			<div class="story-board__inserter-row">+</div>
+		</div>
+
+		<div class="story-board__column">
+			<div class="story-board__inserter-row">+</div>
+		</div>
+
+		<div class="story-board__column">
+			<div class="story-board__item story-board__scrollable" contenteditable="true">5</div>
+			<div class="story-board__inserter-row">+</div>
+		</div>
+
+		<div class="story-board__row-header nobg">
+			<div class="story-board__inserter-row">+</div>
+		</div>
+
+
+	</div>
+</body>
+
+
+</html>

@@ -1,0 +1,8 @@
+.story-board__item {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  height: 100px;
+  width: 100px;
+  background-color: lightgray;
+  overflow-y: auto;
+}
