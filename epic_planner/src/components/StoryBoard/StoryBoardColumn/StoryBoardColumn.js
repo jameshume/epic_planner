@@ -10,11 +10,16 @@ import StoryBoardItem from '../StoryBoardItem/StoryBoardItem.js';
  * \param props.onNewItemClick
  */
 const storyBoardColumn = props => {
+  console.log("####", props.row_idx, "--", props.row_idx, "--", props.items)
     const items = props.items.map((item, item_idx) => {
       return (
         <StoryBoardItem
           key={'sbi' + props.row_idx + '_' + props.col_idx + '_' + item_idx}
           details={props.items[item_idx]}
+          row_idx={props.row_idx}
+          col_idx={props.col_idx}
+          item_idx={item_idx}
+          onDeleteItemClick={props.onDeleteItemClick}
         />
       );
     });
@@ -22,12 +27,12 @@ const storyBoardColumn = props => {
     return (
      <div className={styles.column}>
         {items}
-			  <div
+        <div
           className={styles.row_inserter}
           onClick={() => props.onNewItemClick(props.row_idx, props.col_idx)}
-        >+
+        >&#10133;
         </div>
-		  </div>
+      </div>
     );
 };
 

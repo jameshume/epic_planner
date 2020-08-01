@@ -37,27 +37,37 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  * \param props.columns   A list of columns. Each column is represented
  *                        as a list of items, where each item is a dict.
  * \param props.onNewItemClick
+ * \param props.onNewRowClick
  */
 const storyBoardRow = props => {
-  // For each list
-  const columns = props.columns.map((col_inf, col_idx) => {
-    return (<StoryBoardColumn
-      key={'sbc' + props.row_idx + '_' + col_idx}
-      row_idx={props.row_idx}
-      col_idx={col_idx}
-      items={col_inf}
-      onNewItemClick={props.onNewItemClick}
-    />
-    )});
-
-  
+  const columns = 
+    props.columns.map(
+      (col_inf, col_idx) => {
+        console.log("@@@", col_inf, col_idx)
+        return (
+          <StoryBoardColumn
+            key={'sbc' + props.row_idx + '_' + col_idx}
+            row_idx={props.row_idx}
+            col_idx={col_idx}
+            items={col_inf}
+            onNewItemClick={props.onNewItemClick}
+            onDeleteItemClick={props.onDeleteItemClick}
+          />
+        )});
 
   // Must use a fragment as the items need to be individually laid out
   // to place into the grid correctly.
   return (
     <React.Fragment>
       <div className={styles.row_header}>
-        {props.title}
+        <div className={styles.row_header_title}>
+          {props.title}
+        </div>
+        <div
+          className={styles.row_inserter}
+          onClick={() => props.onNewRowClick(props.row_idx)}
+        >&#10133;
+        </div>
       </div>
       {columns}
     </React.Fragment>

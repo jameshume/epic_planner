@@ -12,22 +12,33 @@ import StoryBoardRow from '../../components/StoryBoard/StoryBoardRow/StoryBoardR
 class StoryBoard extends React.Component
 {
   state = {
-    column_headings: ["Group A", "Group B", "Group C"],
-    row_headings: ["Sprint 1", "Sprint 2"],
-    rows: [
-      [
-        [ {title : 'Ticket1'}, {title : 'Ticket1.1'} ],
-        [ {title : 'Ticket2'} ],
-        [ {title : 'Ticket3'} ],
-      ],
-      [
-        [ {title : 'Ticket4'} ],
-        [ {title : 'Ticket5'} ],
-        [ {title : 'Ticket6'} ],
-      ],
-    ],
+    column_headings: ["Group 1"],
+    row_headings: ["Sprint 1"],
+    rows: [ [ [] ] ],
   }
 
+  /*
+   *
+   */
+  deepCopyStateRows = (state) => {
+    let newRows = [];
+    for (let r = 0; r < state.rows.length; ++r) {
+      let col_copy = [];
+      for (let c = 0; c < state.rows[r].length; ++c) {
+        let dicts = [];
+        for (let d = 0; d < state.rows[r][c].length; ++d) {
+          dicts.push({...state.rows[r][c][d]});
+        }
+        col_copy.push(dicts);
+      }
+      newRows.push(col_copy);
+    }
+    return newRows;
+  };
+
+  /*
+   *
+   */
   renderColumnHeadings = () => {
     const headingsClassNames = [
       styles.column_header,
@@ -43,8 +54,11 @@ class StoryBoard extends React.Component
             {col_title}
           </div>
       ), this.state.column_headings);
-  }
+  };
   
+  /*
+   *
+   */
   new_column = () => {
     this.setState(
       (prevState, props) => ({
@@ -54,32 +68,57 @@ class StoryBoard extends React.Component
     );
   };
 
-  new_item = (row_idx, col_idx) => {
-    // Deep copy the state before modifying it.
+  /*
+   *
+   */
+  new_row = (row_idx) => {
     this.setState(
       (prevState, props) => {
-        let newRows = [];
-        for (let r = 0; r < prevState.rows.length; ++r) {
-          let col_copy = [];
-          for (let c = 0; c < prevState.rows[r].length; ++c) {
-            let dicts = [];
-            for (let d = 0; d < prevState.rows[r][c].length; ++d) {
-              dicts.push({...prevState.rows[r][c][d]});
-            }
-            col_copy.push(dicts);
-          }
-          newRows.push(col_copy);
-        }
-        // Add the new ticket.
-        newRows[row_idx][col_idx].push({title : 'new'});
+        const newCols = Array(prevState.column_headings.length).fill([]);
+        let new_row_headings = [...prevState.row_headings];
+        new_row_headings.splice(row_idx+1, 0, "NEW" );
+        let newRows = this.deepCopyStateRows(prevState);
+        newRows.splice(row_idx+1, 0, newCols);
+        //newRows.push(newCols);
+        return ({
+          row_headings : new_row_headings,
+          rows: newRows
+        });
+      }
+    );
+  };
 
+  /*
+   *
+   */
+  new_item = (row_idx, col_idx) => {
+    this.setState(
+      (prevState, props) => {
+        let newRows = this.deepCopyStateRows(prevState);
+        newRows[row_idx][col_idx].push({title : 'new'});
         return ({
           rows: newRows
         });
       }
     );
-  }
+  };
 
+  delete_item = (row_idx, col_idx, item_idx) => {
+    console.log("DELETE ITEM", row_idx, col_idx, item_idx)
+    this.setState(
+      (prevState, props) => {
+        let newRows = this.deepCopyStateRows(prevState);        
+        newRows[row_idx][col_idx].splice(item_idx, 1);
+        return ({
+          rows: newRows
+        });
+      }
+    );
+  };
+
+  /*
+   *
+   */
   render() {
     const inline_style = {
       /* column headings + 1: 1 for the row heading column*/
@@ -95,6 +134,8 @@ class StoryBoard extends React.Component
             row_idx={rowhead_idx}
             columns={this.state.rows[rowhead_idx]}
             onNewItemClick={this.new_item}
+            onNewRowClick={this.new_row}
+            onDeleteItemClick={this.delete_item}
           />
       )});
 
@@ -102,7 +143,7 @@ class StoryBoard extends React.Component
       <div className={styles.board_grid} style={inline_style}>
         <div className={styles.grid_spacer}/>
         {this.renderColumnHeadings()}
-        <div className={styles.column_inserter} onClick={this.new_column}>+</div>
+        <div className={styles.column_inserter} onClick={this.new_column}>&#10133;</div>
         {rows}
 
       </div>

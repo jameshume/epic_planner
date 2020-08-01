@@ -13,5 +13,10 @@
   overflow-y: hidden;
   color: white;
   font-weight: bold;
-  text-align: center;
+  text-align: middle;
+  border-radius: 10px;
+}
+
+.row_inserter:hover {
+  background-color: black;
 }

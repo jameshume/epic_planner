@@ -5,4 +5,23 @@
   width: 100px;
   background-color: lightgray;
   overflow-y: auto;
+  position: relative;
+}
+
+.item:hover {
+  background-color: gray;
+}
+
+.delete_button {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  padding: 0;
+  margin: 0;
+  font-weight: normal;
+}
+
+.delete_button:hover {
+  font-weight: bolder;
+  color: red;
 }

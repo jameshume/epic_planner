@@ -13,13 +13,21 @@
 
 .column_inserter {
   margin: 5px;
-  padding: 0px;
+  padding: 1px;
   height: 100px;
   background-color: gray;
   overflow-x: hidden;
   color: white;
   font-weight: bold;
   text-align: center;
+  border-radius: 10px;
+  vertical-align: middle;
+  text-align: middle;
+  width: 21px;
+}
+
+.column_inserter:hover {
+  background-color: black;
 }
 
 .column_header {
