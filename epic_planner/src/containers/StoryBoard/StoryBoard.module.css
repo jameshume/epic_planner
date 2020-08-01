@@ -1,0 +1,34 @@
+.board_grid {
+  display: grid;
+  width: 100vw;
+  grid-auto-rows: min-content;
+}
+
+.grid_spacer {
+  margin: 5px;
+  height: 100px;
+  width: 100px;
+  display: hidden;
+}
+
+.column_inserter {
+  margin: 5px;
+  padding: 0px;
+  height: 100px;
+  background-color: gray;
+  overflow-x: hidden;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.column_header {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  height: 100px;
+  width: 100px;
+  background-color: lightgray;
+  overflow-y: auto;
+  background-color: rgb(186, 210, 219);
+}
+

@@ -1,11 +1,10 @@
 import React from 'react';
 import './App.css';
+import StoryBoard from './containers/StoryBoard/StoryBoard.js';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-      </header>
       <main>
         <StoryBoard/>
       </main>

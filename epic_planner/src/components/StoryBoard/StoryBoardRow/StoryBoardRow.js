@@ -1,5 +1,6 @@
 import React from 'react';
-import styles from './StoryBoardRow.css';
+import styles from './StoryBoardRow.module.css';
+import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
 
 /*
  * The row is a row in the CSS grid that lays out the story board. The first
@@ -35,23 +36,27 @@ import styles from './StoryBoardRow.css';
  *                        0 is the header row..
  * \param props.columns   A list of columns. Each column is represented
  *                        as a list of items, where each item is a dict.
+ * \param props.onNewItemClick
  */
 const storyBoardRow = props => {
   // For each list
-  const columns = props.columns.map((col_inf, col_idx) =>
-    <StoryBoardColumn
-      key={'sbc' + row_idx + '_' + col_idx}
-      row_idx={row_idx}
+  const columns = props.columns.map((col_inf, col_idx) => {
+    return (<StoryBoardColumn
+      key={'sbc' + props.row_idx + '_' + col_idx}
+      row_idx={props.row_idx}
       col_idx={col_idx}
       items={col_inf}
+      onNewItemClick={props.onNewItemClick}
     />
-  );
+    )});
+
+  
 
   // Must use a fragment as the items need to be individually laid out
   // to place into the grid correctly.
   return (
     <React.Fragment>
-      <div style={styles.story-board__row-header} contenteditable="true">
+      <div className={styles.row_header}>
         {props.title}
       </div>
       {columns}

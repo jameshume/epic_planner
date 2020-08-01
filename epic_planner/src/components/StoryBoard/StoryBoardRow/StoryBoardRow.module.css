@@ -1,4 +1,4 @@
-.story-board__row-header {
+.row_header {
   display: flex;
   flex-direction: column;
   grid-column-start: 1;
