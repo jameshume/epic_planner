@@ -79,7 +79,6 @@ class StoryBoard extends React.Component
         new_row_headings.splice(row_idx+1, 0, "NEW" );
         let newRows = this.deepCopyStateRows(prevState);
         newRows.splice(row_idx+1, 0, newCols);
-        //newRows.push(newCols);
         return ({
           row_headings : new_row_headings,
           rows: newRows
@@ -103,8 +102,10 @@ class StoryBoard extends React.Component
     );
   };
 
+  /*
+   *
+   */
   delete_item = (row_idx, col_idx, item_idx) => {
-    console.log("DELETE ITEM", row_idx, col_idx, item_idx)
     this.setState(
       (prevState, props) => {
         let newRows = this.deepCopyStateRows(prevState);        

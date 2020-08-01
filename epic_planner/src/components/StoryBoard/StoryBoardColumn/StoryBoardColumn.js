@@ -10,7 +10,6 @@ import StoryBoardItem from '../StoryBoardItem/StoryBoardItem.js';
  * \param props.onNewItemClick
  */
 const storyBoardColumn = props => {
-  console.log("####", props.row_idx, "--", props.row_idx, "--", props.items)
     const items = props.items.map((item, item_idx) => {
       return (
         <StoryBoardItem

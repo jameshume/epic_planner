@@ -43,7 +43,6 @@ const storyBoardRow = props => {
   const columns = 
     props.columns.map(
       (col_inf, col_idx) => {
-        console.log("@@@", col_inf, col_idx)
         return (
           <StoryBoardColumn
             key={'sbc' + props.row_idx + '_' + col_idx}
