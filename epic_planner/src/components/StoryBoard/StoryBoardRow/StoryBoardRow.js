@@ -40,19 +40,16 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  * \param props.onNewRowClick
  */
 const storyBoardRow = props => {
-  const columns = 
-    props.columns.map(
-      (col_inf, col_idx) => {
-        return (
-          <StoryBoardColumn
-            key={'sbc' + props.row_idx + '_' + col_idx}
-            row_idx={props.row_idx}
-            col_idx={col_idx}
-            items={col_inf}
-            onNewItemClick={props.onNewItemClick}
-            onDeleteItemClick={props.onDeleteItemClick}
-          />
-        )});
+  const columns = props.columns.map((col_inf, col_idx) => (
+    <StoryBoardColumn
+      key={'sbc' + props.row_idx + '_' + col_idx}
+      row_idx={props.row_idx}
+      col_idx={col_idx}
+      items={col_inf}
+      onNewItemClick={props.onNewItemClick}
+      onDeleteItemClick={props.onDeleteItemClick}
+    />
+  ));
 
   // Must use a fragment as the items need to be individually laid out
   // to place into the grid correctly.
@@ -65,7 +62,8 @@ const storyBoardRow = props => {
         <div
           className={styles.row_inserter}
           onClick={() => props.onNewRowClick(props.row_idx)}
-        >&#10133;
+        >
+          <span role='img' aria-label='delete'>&#10133;</span>
         </div>
       </div>
       {columns}

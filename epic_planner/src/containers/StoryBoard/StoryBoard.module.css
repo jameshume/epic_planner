@@ -1,6 +1,6 @@
 .board_grid {
   display: grid;
-  width: 100vw;
+  /*width: 100vw;*/
   grid-auto-rows: min-content;
 }
 
@@ -35,8 +35,12 @@
   margin-top: 5px;
   height: 100px;
   width: 100px;
-  background-color: lightgray;
   overflow-y: auto;
   background-color: rgb(186, 210, 219);
+  border: 1px solid rgb(186, 210, 219);
+}
+
+.column_header:hover {
+  border: 1px solid black;
 }
 

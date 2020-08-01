@@ -29,7 +29,8 @@ const storyBoardColumn = props => {
         <div
           className={styles.row_inserter}
           onClick={() => props.onNewItemClick(props.row_idx, props.col_idx)}
-        >&#10133;
+        >
+          <span role='img' aria-label='delete'>&#10133;</span>
         </div>
       </div>
     );

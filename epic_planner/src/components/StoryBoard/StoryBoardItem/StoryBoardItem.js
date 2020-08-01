@@ -15,7 +15,7 @@ const storyBoardItem = props => {
     <div 
       className={styles.delete_button}
       onClick={() => props.onDeleteItemClick(props.row_idx, props.col_idx, props.item_idx)}
-    >&#128473;</div>
+    ><span role='img' aria-label='delete'>&#128473;</span></div>
     {props.details['title']}
   </div>
 )};

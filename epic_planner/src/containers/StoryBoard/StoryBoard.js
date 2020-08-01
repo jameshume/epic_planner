@@ -108,13 +108,20 @@ class StoryBoard extends React.Component
   delete_item = (row_idx, col_idx, item_idx) => {
     this.setState(
       (prevState, props) => {
-        let newRows = this.deepCopyStateRows(prevState);        
+        let newRows = this.deepCopyStateRows(prevState);
         newRows[row_idx][col_idx].splice(item_idx, 1);
         return ({
-          rows: newRows
+          rows: newRows,
         });
       }
     );
+  };
+
+  /*
+   *
+   */
+  item_click = () => {
+    this.setState({})
   };
 
   /*
@@ -137,14 +144,16 @@ class StoryBoard extends React.Component
             onNewItemClick={this.new_item}
             onNewRowClick={this.new_row}
             onDeleteItemClick={this.delete_item}
+            onItemClick={this.item_click}
           />
       )});
 
     return (
+      
       <div className={styles.board_grid} style={inline_style}>
         <div className={styles.grid_spacer}/>
         {this.renderColumnHeadings()}
-        <div className={styles.column_inserter} onClick={this.new_column}>&#10133;</div>
+        <div className={styles.column_inserter} onClick={this.new_column}><span role='img' aria-label='delete'>&#10133;</span></div>
         {rows}
 
       </div>
