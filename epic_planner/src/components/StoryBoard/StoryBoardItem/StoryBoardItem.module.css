@@ -5,8 +5,10 @@
   width: 100px;
   background-color: lightgray;
   border: 1px solid lightgray;
-  overflow-y: auto;
   position: relative;
+  font-size: 0.9rem;
+  overflow-x: auto; 
+  overflow-y: auto; 
 }
 
 .item:hover {

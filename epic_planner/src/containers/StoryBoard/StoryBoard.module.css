@@ -1,6 +1,26 @@
+.board_scrollable_container {
+  margin-right: 26vw;
+  overflow: auto;
+}
+
+textarea {
+  width: 90%; /*<<< TOTAL SHIT - nEED TO FIX */
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.properties_panel {
+  position: fixed;
+  width: 25vw;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  background: rgb(211,211,211);
+  border-left: 1px solid gray;
+}
+
 .board_grid {
   display: grid;
-  /*width: 100vw;*/
   grid-auto-rows: min-content;
 }
 

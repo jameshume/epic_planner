@@ -3,6 +3,14 @@ import styles from './StoryBoard.module.css';
 import styles_common from '../../common/StoryBoardCommon.module.css';
 import StoryBoardRow from '../../components/StoryBoard/StoryBoardRow/StoryBoardRow.js';
 
+const ElementType = {
+  NONE: 'none',
+  ITEM: 'item',
+  COLHEADER: 'colheader',
+  ROWHEADER: 'rowheader',
+}
+
+
 /*
  * The storyboard is just a grid of items. The first row consists
  * of the column headings and the first column consists of the row
@@ -15,6 +23,15 @@ class StoryBoard extends React.Component
     column_headings: ["Group 1"],
     row_headings: ["Sprint 1"],
     rows: [ [ [] ] ],
+    prop_win: {
+      title: null,
+      description: null,
+      storypoints: 0,
+      type: null,
+      row_idx: -1,
+      col_idx: -1,
+      item_idx: -1,
+    },
   }
 
   /*
@@ -94,7 +111,11 @@ class StoryBoard extends React.Component
     this.setState(
       (prevState, props) => {
         let newRows = this.deepCopyStateRows(prevState);
-        newRows[row_idx][col_idx].push({title : 'new'});
+        newRows[row_idx][col_idx].push({
+          title: 'new' + Math.floor(Math.random()*100),
+          description: '',
+        });
+
         return ({
           rows: newRows
         });
@@ -110,9 +131,30 @@ class StoryBoard extends React.Component
       (prevState, props) => {
         let newRows = this.deepCopyStateRows(prevState);
         newRows[row_idx][col_idx].splice(item_idx, 1);
-        return ({
+
+        let new_state = {
           rows: newRows,
-        });
+        };
+
+        if
+        (
+             (prevState.prop_win.row_idx === row_idx)
+          && (prevState.prop_win.col_idx === col_idx)
+          && (prevState.prop_win.item_idx === item_idx)
+        )
+        {
+          new_state.prop_win = {
+            title: '',
+            description: '',
+            storypoints: 0,
+            type: ElementType.NONE,
+            row_idx: -1,
+            col_idx: -1,
+            item_idx: -1,
+          };
+        }
+
+        return (new_state);
       }
     );
   };
@@ -120,9 +162,76 @@ class StoryBoard extends React.Component
   /*
    *
    */
-  item_click = (title) => {
-    console.log("#### ITEM CLICKED", title)
-    this.props.showProp(title)
+  item_click = (row_idx, col_idx, item_idx) => {
+    this.setState(
+      (prevState, props) => ({
+        prop_win: {
+          title: prevState.rows[row_idx][col_idx][item_idx].title,
+          description: prevState.rows[row_idx][col_idx][item_idx].description,
+          storypoints: prevState.rows[row_idx][col_idx][item_idx].storypoints,
+          type: ElementType.ITEM,
+          row_idx: row_idx,
+          col_idx: col_idx,
+          item_idx: item_idx,
+        }
+      }));
+  };
+
+  /*
+   *
+   */
+  prop_title_change = (evt) => {
+    if (this.state.prop_win.type === ElementType.ITEM)
+    {
+      let newRows = this.deepCopyStateRows(this.state);
+      newRows[this.state.prop_win.row_idx]
+             [this.state.prop_win.col_idx]
+             [this.state.prop_win.item_idx].title = evt.target.value;
+      let newPropWin = {...this.state.prop_win};
+      newPropWin.title = evt.target.value;
+      this.setState({
+        rows:newRows,
+        prop_win: newPropWin
+      });
+    }
+  }
+
+  /*
+   *
+   */
+  prop_description_change = (evt) => {
+    if (this.state.prop_win.type === ElementType.ITEM)
+    {
+      let newRows = this.deepCopyStateRows(this.state);
+      newRows[this.state.prop_win.row_idx]
+             [this.state.prop_win.col_idx]
+             [this.state.prop_win.item_idx].description = evt.target.value;
+      let newPropWin = {...this.state.prop_win};
+      newPropWin.description = evt.target.value;
+      this.setState({
+        rows:newRows,
+        prop_win: newPropWin
+      });
+    }    
+  }
+
+  /*
+   *
+   */
+  prop_storypoints_change = (evt) => {
+    if (this.state.prop_win.type === ElementType.ITEM)
+    {
+      let newRows = this.deepCopyStateRows(this.state);
+      newRows[this.state.prop_win.row_idx]
+             [this.state.prop_win.col_idx]
+             [this.state.prop_win.item_idx].storypoints = evt.target.value;
+      let newPropWin = {...this.state.prop_win};
+      newPropWin.storypoints = evt.target.value;
+      this.setState({
+        rows:newRows,
+        prop_win: newPropWin
+      });
+    }    
   };
 
   /*
@@ -149,15 +258,35 @@ class StoryBoard extends React.Component
           />
       )});
 
-    return (
-      
-      <div className={styles.board_grid} style={inline_style}>
-        <div className={styles.grid_spacer}/>
-        {this.renderColumnHeadings()}
-        <div className={styles.column_inserter} onClick={this.new_column}><span role='img' aria-label='delete'>&#10133;</span></div>
-        {rows}
+    return (    
+      <React.Fragment>
+        <div className={styles.board_scrollable_container}>
+          <div className={styles.board_grid} style={inline_style}>
+            <div className={styles.grid_spacer}/>
+            {this.renderColumnHeadings()}
+            <div className={styles.column_inserter} onClick={this.new_column}><span role='img' aria-label='delete'>&#10133;</span></div>
+            {rows}
+          </div>
+        </div>
 
-      </div>
+        <div className={styles.properties_panel}>
+          <p>Properties</p>
+          <label>Title:</label>
+          <textarea
+            value={this.state.prop_win.title}
+            onChange={this.prop_title_change}/>
+          <label>Description:</label>
+          <textarea
+            value={this.state.prop_win.description}
+            onChange={this.prop_description_change}
+          />
+          <label>Story points:</label>
+          <input
+            value={this.state.prop_win.storypoints}
+            onChange={this.prop_storypoints_change}
+          />
+        </div>
+      </React.Fragment>  
     );
   }
 }

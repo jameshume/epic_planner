@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './StoryBoardItem.module.css';
+import styles_common from '../../../common/StoryBoardCommon.module.css';
 
 /*
  * \param props.details - A dictionary: {
@@ -12,10 +13,14 @@ import styles from './StoryBoardItem.module.css';
  */
 const storyBoardItem = props => {
   return (
-  <div className={styles.item} onClick={()=>props.onItemClick(props.details['title'])}>
+  <div 
+    className={[styles.item, styles_common.scrollable].join(' ')}
+    onClick={()=>props.onItemClick(props.row_idx, props.col_idx, props.item_idx)}
+  >
     <div 
       className={styles.delete_button}
-      onClick={() => props.onDeleteItemClick(props.row_idx, props.col_idx, props.item_idx)}
+    
+    onClick={(e) => {e.stopPropagation(); props.onDeleteItemClick(props.row_idx, props.col_idx, props.item_idx);}}
     ><span role='img' aria-label='delete'>&#128473;</span></div>
     {props.details['title']}
   </div>
