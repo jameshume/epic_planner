@@ -12,10 +12,13 @@ import styles_common from '../../../common/StoryBoardCommon.module.css';
  * onItemClick
  */
 const storyBoardItem = props => {
+  // TODO: https://www.freecodecamp.org/news/reactjs-implement-drag-and-drop-feature-without-using-external-libraries-ad8994429f1a/
   return (
   <div 
     className={[styles.item, styles_common.scrollable].join(' ')}
     onClick={()=>props.onItemClick(props.row_idx, props.col_idx, props.item_idx)}
+    draggable
+    onDragOver={()=>console.log("DRAG OVR", props.row_idx, props.col_idx, props.item_idx)}
   >
     <div 
       className={styles.delete_button}

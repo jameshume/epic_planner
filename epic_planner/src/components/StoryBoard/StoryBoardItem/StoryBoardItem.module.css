@@ -3,10 +3,10 @@
   margin-top: 5px;
   height: 100px;
   width: 100px;
-  background-color: lightgray;
-  border: 1px solid lightgray;
+  background-color: rgb(225, 225, 225);
+  border: 1px solid rgb(211, 211, 211);
   position: relative;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   overflow-x: auto; 
   overflow-y: auto; 
 }

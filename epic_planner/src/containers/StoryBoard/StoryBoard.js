@@ -1,3 +1,4 @@
+// TODO - THIS NEEDS A WHILE LOAD OF CLEANUP!!!!
 import React from 'react';
 import styles from './StoryBoard.module.css';
 import styles_common from '../../common/StoryBoardCommon.module.css';
@@ -24,10 +25,10 @@ class StoryBoard extends React.Component
     row_headings: ["Sprint 1"],
     rows: [ [ [] ] ],
     prop_win: {
-      title: null,
-      description: null,
+      title: '',
+      description: '',
       storypoints: 0,
-      type: null,
+      type: ElementType.NONE,
       row_idx: -1,
       col_idx: -1,
       item_idx: -1,
@@ -112,8 +113,9 @@ class StoryBoard extends React.Component
       (prevState, props) => {
         let newRows = this.deepCopyStateRows(prevState);
         newRows[row_idx][col_idx].push({
-          title: 'new' + Math.floor(Math.random()*100),
+          title: '',
           description: '',
+          storypoints: 0,
         });
 
         return ({
@@ -219,7 +221,9 @@ class StoryBoard extends React.Component
    *
    */
   prop_storypoints_change = (evt) => {
-    if (this.state.prop_win.type === ElementType.ITEM)
+    if ( (this.state.prop_win.type === ElementType.ITEM)
+      && (!isNaN(evt.target.value.substr(-1)))
+    )
     {
       let newRows = this.deepCopyStateRows(this.state);
       newRows[this.state.prop_win.row_idx]
