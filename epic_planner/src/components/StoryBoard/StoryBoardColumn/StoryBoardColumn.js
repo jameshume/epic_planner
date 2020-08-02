@@ -8,6 +8,7 @@ import StoryBoardItem from '../StoryBoardItem/StoryBoardItem.js';
  * \param props.items   - list of dictionaries describing the ticket items in
  *                        this column.
  * \param props.onNewItemClick
+ * onItemClick
  */
 const storyBoardColumn = props => {
     const items = props.items.map((item, item_idx) => {
@@ -19,6 +20,7 @@ const storyBoardColumn = props => {
           col_idx={props.col_idx}
           item_idx={item_idx}
           onDeleteItemClick={props.onDeleteItemClick}
+          onItemClick={props.onItemClick}
         />
       );
     });

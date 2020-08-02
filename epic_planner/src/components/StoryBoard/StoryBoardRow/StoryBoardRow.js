@@ -38,6 +38,7 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  *                        as a list of items, where each item is a dict.
  * \param props.onNewItemClick
  * \param props.onNewRowClick
+ * \param props.onItemClick
  */
 const storyBoardRow = props => {
   const columns = props.columns.map((col_inf, col_idx) => (
@@ -48,6 +49,7 @@ const storyBoardRow = props => {
       items={col_inf}
       onNewItemClick={props.onNewItemClick}
       onDeleteItemClick={props.onDeleteItemClick}
+      onItemClick={props.onItemClick}
     />
   ));
 

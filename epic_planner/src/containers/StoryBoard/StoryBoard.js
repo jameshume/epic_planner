@@ -120,8 +120,9 @@ class StoryBoard extends React.Component
   /*
    *
    */
-  item_click = () => {
-    this.setState({})
+  item_click = (title) => {
+    console.log("#### ITEM CLICKED", title)
+    this.props.showProp(title)
   };
 
   /*

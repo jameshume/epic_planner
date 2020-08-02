@@ -18,15 +18,26 @@ const s3 = {
   borderLeft: '1px solid gray'
 };
 
-function App() {
-  return (
-    <div className="App" style={s2}>
-      <StoryBoard />
-      <div style={s3}>
-        <p>Properties</p>
+class App extends React.Component {
+  state = {
+    title: "select something"
+  }
+
+  display_properties = (title)  => {
+    this.setState({title: title})
+  };
+
+  render() {
+    return (
+      <div className="App" style={s2}>
+        <StoryBoard showProp={this.display_properties}/>
+        <div style={s3}>
+          <p>Properties</p>
+          <input value={this.state.title}/>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
