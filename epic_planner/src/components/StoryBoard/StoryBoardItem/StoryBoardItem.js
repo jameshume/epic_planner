@@ -22,9 +22,12 @@ const storyBoardItem = props => {
   >
     <div 
       className={styles.delete_button}
-    
-    onClick={(e) => {e.stopPropagation(); props.onDeleteItemClick(props.row_idx, props.col_idx, props.item_idx);}}
-    ><span role='img' aria-label='delete'>&#128473;</span></div>
+      onClick={(e) => {e.stopPropagation(); 
+                       props.onDeleteItemClick(props.row_idx, props.col_idx, props.item_idx);}
+              }
+    >
+      <span role='img' aria-label='delete'>&#128473;</span>
+    </div>
     {props.details['title']}
   </div>
 )};

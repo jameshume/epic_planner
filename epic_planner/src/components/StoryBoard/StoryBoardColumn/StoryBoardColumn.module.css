@@ -15,6 +15,7 @@
   font-weight: bold;
   text-align: middle;
   border-radius: 10px;
+  font-size: 0.6rem;
 }
 
 .row_inserter:hover {

@@ -21,11 +21,20 @@ const ElementType = {
 class StoryBoard extends React.Component
 {
   state = {
-    column_headings: ["Group 1"],
-    row_headings: ["Sprint 1"],
-    rows: [ [ [] ] ],
-    prop_win: {
-      title: '',
+    column_headings: ["Type title here"],
+    row_headings: ["Type title here"],
+    rows: [   /*<< List of lists. Each inner list represents a row. */
+      [       /*<< This inner list represents the first row - the must always be at least 1 blank row */
+        [     /*<< The row will be a list of columns, where each column is also a list */
+          {}  /*<< Each dictionary in the column represents a ticket/item. The dictionary members are
+               *   documented in StoryBoardItem.js */
+        ]
+      ] 
+    ],
+
+    // TODO: This is a conflation of selected element and property window!
+    selected_element: { /*<< This represents the selected block, a ticket/item, row or column header */
+      title: '',        /*<< The title is the title in the properties window, not the element! */
       description: '',
       storypoints: 0,
       type: ElementType.NONE,
@@ -70,6 +79,15 @@ class StoryBoard extends React.Component
             key={'ch' + col_idx}
           >
             {col_title}
+            <div 
+              className={styles.delete_button}
+              onClick={(e) => {e.stopPropagation(); 
+                               this.delete_column(col_idx);
+                              }
+                      }
+            >
+              <span role='img' aria-label='delete'>&#128473;</span>
+            </div>
           </div>
       ), this.state.column_headings);
   };
@@ -86,6 +104,57 @@ class StoryBoard extends React.Component
     );
   };
 
+
+  /*
+   *
+   */
+  delete_column = (col_idx) => {
+    this.setState(
+      (prevState, props) => {
+        let new_column_headings = [...prevState.column_headings];
+        new_column_headings.splice(col_idx, 1);
+
+        let new_rows = this.deepCopyStateRows(prevState);
+        for( let idx = 0; idx < new_rows.length; ++idx) {
+          new_rows[idx].splice(col_idx);
+        }
+
+        return ({
+          column_headings: new_column_headings,
+          rows: new_rows
+        });
+      }
+    );
+  };
+
+
+
+  /*
+   *
+   */
+  delete_row = (row_idx) => {
+    this.setState(
+      (prevState, props) => {
+        if (prevState.row_headings.length > 1) {
+          let new_row_headings = [...prevState.row_headings]
+          new_row_headings.splice(row_idx, 1);
+          let new_rows = this.deepCopyStateRows(prevState);
+          new_rows.splice(row_idx, 1);
+          return ({
+            row_headings : new_row_headings,
+            rows: new_rows
+          });
+        }
+        else {
+          return ({
+            row_headings: ["Type title here"],
+            rows: [ [ [] ] ],
+          });
+        }  
+      }
+    );
+  };
+
   /*
    *
    */
@@ -94,7 +163,7 @@ class StoryBoard extends React.Component
       (prevState, props) => {
         const newCols = Array(prevState.column_headings.length).fill([]);
         let new_row_headings = [...prevState.row_headings];
-        new_row_headings.splice(row_idx+1, 0, "NEW" );
+        new_row_headings.splice(row_idx+1, 0, "Type title here" );
         let newRows = this.deepCopyStateRows(prevState);
         newRows.splice(row_idx+1, 0, newCols);
         return ({
@@ -140,12 +209,12 @@ class StoryBoard extends React.Component
 
         if
         (
-             (prevState.prop_win.row_idx === row_idx)
-          && (prevState.prop_win.col_idx === col_idx)
-          && (prevState.prop_win.item_idx === item_idx)
+             (prevState.selected_element.row_idx === row_idx)
+          && (prevState.selected_element.col_idx === col_idx)
+          && (prevState.selected_element.item_idx === item_idx)
         )
         {
-          new_state.prop_win = {
+          new_state.selected_element = {
             title: '',
             description: '',
             storypoints: 0,
@@ -167,7 +236,7 @@ class StoryBoard extends React.Component
   item_click = (row_idx, col_idx, item_idx) => {
     this.setState(
       (prevState, props) => ({
-        prop_win: {
+        selected_element: {
           title: prevState.rows[row_idx][col_idx][item_idx].title,
           description: prevState.rows[row_idx][col_idx][item_idx].description,
           storypoints: prevState.rows[row_idx][col_idx][item_idx].storypoints,
@@ -179,22 +248,48 @@ class StoryBoard extends React.Component
       }));
   };
 
+  row_header_click = (row_idx) => {
+    this.setState(
+      (prevState, props) => ({
+        selected_element: {
+          title: prevState.row_headings[row_idx],
+          description: '',
+          storypoints: '',
+          type: ElementType.ROWHEADER,
+          row_idx: row_idx,
+          col_idx:-1,
+          item_idx:-1,
+        }
+      }));
+  }
+
   /*
    *
    */
   prop_title_change = (evt) => {
-    if (this.state.prop_win.type === ElementType.ITEM)
+    if (this.state.selected_element.type === ElementType.ITEM)
     {
       let newRows = this.deepCopyStateRows(this.state);
-      newRows[this.state.prop_win.row_idx]
-             [this.state.prop_win.col_idx]
-             [this.state.prop_win.item_idx].title = evt.target.value;
-      let newPropWin = {...this.state.prop_win};
+      newRows[this.state.selected_element.row_idx]
+             [this.state.selected_element.col_idx]
+             [this.state.selected_element.item_idx].title = evt.target.value;
+      let newPropWin = {...this.state.selected_element};
       newPropWin.title = evt.target.value;
       this.setState({
         rows:newRows,
-        prop_win: newPropWin
+        selected_element: newPropWin
       });
+    }
+    else if (this.state.selected_element.type === ElementType.ROWHEADER)
+    {
+      let newHeaders = [...this.state.row_headings]
+      newHeaders[this.state.selected_element.row_idx] = evt.target.value;
+      let newPropWin = {...this.state.selected_element};
+      newPropWin.title = evt.target.value;
+      this.setState({
+        row_headings: newHeaders,
+        selected_element: newPropWin
+      })
     }
   }
 
@@ -202,17 +297,17 @@ class StoryBoard extends React.Component
    *
    */
   prop_description_change = (evt) => {
-    if (this.state.prop_win.type === ElementType.ITEM)
+    if (this.state.selected_element.type === ElementType.ITEM)
     {
       let newRows = this.deepCopyStateRows(this.state);
-      newRows[this.state.prop_win.row_idx]
-             [this.state.prop_win.col_idx]
-             [this.state.prop_win.item_idx].description = evt.target.value;
-      let newPropWin = {...this.state.prop_win};
+      newRows[this.state.selected_element.row_idx]
+             [this.state.selected_element.col_idx]
+             [this.state.selected_element.item_idx].description = evt.target.value;
+      let newPropWin = {...this.state.selected_element};
       newPropWin.description = evt.target.value;
       this.setState({
         rows:newRows,
-        prop_win: newPropWin
+        selected_element: newPropWin
       });
     }    
   }
@@ -221,19 +316,19 @@ class StoryBoard extends React.Component
    *
    */
   prop_storypoints_change = (evt) => {
-    if ( (this.state.prop_win.type === ElementType.ITEM)
+    if ( (this.state.selected_element.type === ElementType.ITEM)
       && (!isNaN(evt.target.value.substr(-1)))
     )
     {
       let newRows = this.deepCopyStateRows(this.state);
-      newRows[this.state.prop_win.row_idx]
-             [this.state.prop_win.col_idx]
-             [this.state.prop_win.item_idx].storypoints = evt.target.value;
-      let newPropWin = {...this.state.prop_win};
+      newRows[this.state.selected_element.row_idx]
+             [this.state.selected_element.col_idx]
+             [this.state.selected_element.item_idx].storypoints = evt.target.value;
+      let newPropWin = {...this.state.selected_element};
       newPropWin.storypoints = evt.target.value;
       this.setState({
         rows:newRows,
-        prop_win: newPropWin
+        selected_element: newPropWin
       });
     }    
   };
@@ -243,8 +338,8 @@ class StoryBoard extends React.Component
    */
   render() {
     const inline_style = {
-      /* column headings + 1: 1 for the row heading column*/
-      gridTemplateColumns : `repeat(${this.state.column_headings.length + 1}, 110px) 28px`
+      /* First px for the row header. 28px for final column for the col expander */
+      gridTemplateColumns : `130px repeat(${this.state.column_headings.length}, 110px) 28px`
     };
 
     const rows = this.state.row_headings.map(
@@ -259,6 +354,8 @@ class StoryBoard extends React.Component
             onNewRowClick={this.new_row}
             onDeleteItemClick={this.delete_item}
             onItemClick={this.item_click}
+            onRowHeaderClick={this.row_header_click}
+            onDeleteRowClick={this.delete_row}
           />
       )});
 
@@ -277,16 +374,16 @@ class StoryBoard extends React.Component
           <p>Properties</p>
           <label>Title:</label>
           <textarea
-            value={this.state.prop_win.title}
+            value={this.state.selected_element.title}
             onChange={this.prop_title_change}/>
           <label>Description:</label>
           <textarea
-            value={this.state.prop_win.description}
+            value={this.state.selected_element.description}
             onChange={this.prop_description_change}
           />
           <label>Story points:</label>
           <input
-            value={this.state.prop_win.storypoints}
+            value={this.state.selected_element.storypoints}
             onChange={this.prop_storypoints_change}
           />
         </div>

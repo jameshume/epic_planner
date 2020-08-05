@@ -39,6 +39,8 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  * \param props.onNewItemClick
  * \param props.onNewRowClick
  * \param props.onItemClick
+ * \param props.onRowHeaderClick
+ * onDeleteRowClick
  */
 const storyBoardRow = props => {
   const columns = props.columns.map((col_inf, col_idx) => (
@@ -55,17 +57,29 @@ const storyBoardRow = props => {
 
   // Must use a fragment as the items need to be individually laid out
   // to place into the grid correctly.
+  const s = {display: 'flex'};
   return (
     <React.Fragment>
       <div className={styles.row_header}>
-        <div className={styles.row_header_title}>
+        <div 
+          className={styles.row_header_title}
+          onClick={() => props.onRowHeaderClick(props.row_idx)}
+        >
           {props.title}
         </div>
-        <div
-          className={styles.row_inserter}
-          onClick={() => props.onNewRowClick(props.row_idx)}
-        >
-          <span role='img' aria-label='delete'>&#10133;</span>
+        <div style={s}>
+          <div         
+            className={styles.row_inserter}
+            onClick={() => props.onNewRowClick(props.row_idx)}
+          >
+            <div role='img' aria-label='insert new row'>&#10133;</div>
+          </div>
+          <div         
+            className={styles.row_inserter}
+            onClick={() => props.onDeleteRowClick(props.row_idx)}
+          >
+            <div role='img' aria-label='delete this row'>-</div>
+          </div>
         </div>
       </div>
       {columns}

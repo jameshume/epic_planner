@@ -32,7 +32,7 @@ const storyBoardColumn = props => {
           className={styles.row_inserter}
           onClick={() => props.onNewItemClick(props.row_idx, props.col_idx)}
         >
-          <span role='img' aria-label='delete'>&#10133;</span>
+          <span role='img' aria-label='insert new column'>&#10133;</span>
         </div>
       </div>
     );

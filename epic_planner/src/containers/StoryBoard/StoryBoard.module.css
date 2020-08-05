@@ -34,7 +34,6 @@ textarea {
 .column_inserter {
   margin: 5px;
   padding: 1px;
-  height: 100px;
   background-color: gray;
   overflow-x: hidden;
   color: white;
@@ -43,7 +42,7 @@ textarea {
   border-radius: 10px;
   vertical-align: middle;
   text-align: middle;
-  width: 21px;
+  font-size: 0.6rem;
 }
 
 .column_inserter:hover {
@@ -58,9 +57,25 @@ textarea {
   overflow-y: auto;
   background-color: rgb(186, 210, 219);
   border: 1px solid rgb(186, 210, 219);
+  position:relative;
 }
 
 .column_header:hover {
   border: 1px solid black;
 }
 
+
+.delete_button {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  padding: 0;
+  margin: 0;
+  font-weight: normal;
+  line-height: 0.9rem;
+}
+
+.delete_button:hover {
+  font-weight: bolder;
+  color: red;
+}
