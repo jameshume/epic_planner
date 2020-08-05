@@ -91,21 +91,11 @@ class StoryBoard extends React.Component
           </div>
       ), this.state.columnHeadings);
   };
-  
-  /*
-   *
-   */
-  insertNewColumn = () => {
-    this.setState(
-      (prevState, props) => ({
-        columnHeadings: [...prevState.columnHeadings, "new"],
-        rows: prevState.rows.map(row => [...row, []])
-      })
-    );
-  };
+
+
 
   /************************************************************************************************
-   * DELETE OPERATIONS
+   * DELETION EVENTS
    */
 
   /*
@@ -136,7 +126,6 @@ class StoryBoard extends React.Component
   };
 
 
-
   /*
    *
    */
@@ -163,44 +152,6 @@ class StoryBoard extends React.Component
     );
   };
 
-  /*
-   *
-   */
-  insertNewRow = (rowIdx) => {
-    this.setState(
-      (prevState, props) => {
-        const newCols = Array(prevState.columnHeadings.length).fill([]);
-        let newRowHeadings = [...prevState.rowHeadings];
-        newRowHeadings.splice(rowIdx+1, 0, "Type title here" );
-        let newRows = this.deepCopyStateRows(prevState);
-        newRows.splice(rowIdx+1, 0, newCols);
-        return ({
-          rowHeadings : newRowHeadings,
-          rows: newRows
-        });
-      }
-    );
-  };
-
-  /*
-   *
-   */
-  insertNewItem = (rowIdx, colIdx) => {
-    this.setState(
-      (prevState, props) => {
-        let newRows = this.deepCopyStateRows(prevState);
-        newRows[rowIdx][colIdx].push({
-          title: '',
-          description: '',
-          storypoints: 0,
-        });
-
-        return ({
-          rows: newRows
-        });
-      }
-    );
-  };
 
   /*
    *
@@ -238,8 +189,69 @@ class StoryBoard extends React.Component
     );
   };
 
+
+
   /************************************************************************************************
-   * SELECT ITEMS
+   * INSERTION EVENTS
+   */
+
+  /*
+   *
+   */
+  insertNewColumn = () => {
+    this.setState(
+      (prevState, props) => ({
+        columnHeadings: [...prevState.columnHeadings, "new"],
+        rows: prevState.rows.map(row => [...row, []])
+      })
+    );
+  };
+
+
+  /*
+   *
+   */
+  insertNewRow = (rowIdx) => {
+    this.setState(
+      (prevState, props) => {
+        const newCols = Array(prevState.columnHeadings.length).fill([]);
+        let newRowHeadings = [...prevState.rowHeadings];
+        newRowHeadings.splice(rowIdx+1, 0, "Type title here" );
+        let newRows = this.deepCopyStateRows(prevState);
+        newRows.splice(rowIdx+1, 0, newCols);
+        return ({
+          rowHeadings : newRowHeadings,
+          rows: newRows
+        });
+      }
+    );
+  };
+
+
+  /*
+   *
+   */
+  insertNewItem = (rowIdx, colIdx) => {
+    this.setState(
+      (prevState, props) => {
+        let newRows = this.deepCopyStateRows(prevState);
+        newRows[rowIdx][colIdx].push({
+          title: '',
+          description: '',
+          storypoints: 0,
+        });
+
+        return ({
+          rows: newRows
+        });
+      }
+    );
+  };
+
+
+
+  /************************************************************************************************
+   * SELECT EVENTS
    */
 
   /*
@@ -261,6 +273,7 @@ class StoryBoard extends React.Component
       }));
   };
 
+
   /*
    * A row header has been clicked. The selected element needs to be updated as
    * well as the properties window.
@@ -279,6 +292,7 @@ class StoryBoard extends React.Component
         }
       }));
   }
+
 
   /*
    *
@@ -309,6 +323,7 @@ class StoryBoard extends React.Component
       })
     }
   }
+
 
   /*
    *
