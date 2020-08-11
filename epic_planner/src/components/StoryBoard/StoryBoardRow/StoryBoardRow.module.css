@@ -10,6 +10,11 @@
   padding: 0px;
 }
 
+.row_header_selected {
+  background-color: rgb(183, 193, 237);
+  border: 1px solid black;
+}
+
 .row_header:hover {
   border: 1px solid black;
 }

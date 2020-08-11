@@ -55,9 +55,14 @@ textarea {
   height: 100px;
   width: 100px;
   overflow-y: auto;
-  background-color: rgb(186, 210, 219);
-  border: 1px solid rgb(186, 210, 219);
+  background-color: rgb(186, 210, 220);
+  border: 1px solid rgb(186, 210, 220);
   position:relative;
+}
+
+.column_header_selected {
+  border: 1px solid black;
+  background-color: rgb(183, 193, 237);
 }
 
 .column_header:hover {

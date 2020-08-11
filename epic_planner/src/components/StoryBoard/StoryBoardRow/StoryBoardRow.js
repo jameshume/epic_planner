@@ -41,6 +41,7 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  * \param props.onItemClick
  * \param props.onRowHeaderClick
  * onDeleteRowClick
+ * selection null or list [type, colidx, itemIdx]
  */
 const storyBoardRow = props => {
   const columns = props.columns.map((col_inf, col_idx) => (
@@ -52,15 +53,22 @@ const storyBoardRow = props => {
       onNewItemClick={props.onNewItemClick}
       onDeleteItemClick={props.onDeleteItemClick}
       onItemClick={props.onItemClick}
+      selection={props.selection}
     />
   ));
 
   // Must use a fragment as the items need to be individually laid out
   // to place into the grid correctly.
   const s = {display: 'flex'};
+  let headerStyles = [styles.row_header]
+  if (props.selection && (props.selection[0] === "rowheader"))
+  {
+    headerStyles.push(styles.row_header_selected)
+  }
+
   return (
     <React.Fragment>
-      <div className={styles.row_header}>
+      <div className={headerStyles.join(' ')}>
         <div 
           className={styles.row_header_title}
           onClick={() => props.onRowHeaderClick(props.row_idx)}
@@ -72,7 +80,7 @@ const storyBoardRow = props => {
             className={styles.row_inserter}
             onClick={() => props.onNewRowClick(props.row_idx)}
           >
-            <div role='img' aria-label='insert new row'>&#10133;</div>
+            <span role='img' aria-label='insert new row'>&#10133;</span>
           </div>
           <div         
             className={styles.row_inserter}

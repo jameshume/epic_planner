@@ -11,6 +11,11 @@
   overflow-y: auto; 
 }
 
+.item_selected {
+  border: 1px solid black;
+  background-color: rgb(183, 193, 237);
+}
+
 .item:hover {
   border: 1px solid black;
 }

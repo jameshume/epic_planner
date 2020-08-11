@@ -9,18 +9,20 @@ import StoryBoardItem from '../StoryBoardItem/StoryBoardItem.js';
  *                        this column.
  * \param props.onNewItemClick
  * onItemClick
+ * selection null or list [type, colidx, itemIdx]
  */
 const storyBoardColumn = props => {
     const items = props.items.map((item, item_idx) => {
       return (
         <StoryBoardItem
-          key={'sbi' + props.row_idx + '_' + props.col_idx + '_' + item_idx}
+          key={'sbi_' + props.row_idx + '_' + props.col_idx + '_' + item_idx}
           details={props.items[item_idx]}
           row_idx={props.row_idx}
           col_idx={props.col_idx}
           item_idx={item_idx}
           onDeleteItemClick={props.onDeleteItemClick}
           onItemClick={props.onItemClick}
+          selection={props.selection}
         />
       );
     });

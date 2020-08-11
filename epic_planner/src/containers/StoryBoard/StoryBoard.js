@@ -23,6 +23,7 @@ class StoryBoard extends React.Component
   state = {
     columnHeadings: ["Type title here"],
     rowHeadings: ["Type title here"],
+    /* Rows is a 3D array: rows[row][col][item] */
     rows: [   /*<< List of lists. Each inner list represents a row. */
       [       /*<< This inner list represents the first row - the must always be at least 1 blank row */
         [     /*<< The row will be a list of columns, where each column is also a list */
@@ -45,22 +46,27 @@ class StoryBoard extends React.Component
   }
 
   /*
-   * Do I REALLY need to do this?!
+   * Does a deep copy of the rows, which is a 3D array: rows[row][col][item], where]
+   * each item is a dictionary of properties such as title, description etc. This is
+   * deep copied so that state is not directly modified.
+   * 
+   * TODO: This seems like a rather inefficient thing to have to do. Perhaps there is
+   * a way to work around this?
    */
   deepCopyStateRows = (state) => {
-    let newRows = [];
+    let rowsCopy = [];
     for (let r = 0; r < state.rows.length; ++r) {
       let colCopy = [];
       for (let c = 0; c < state.rows[r].length; ++c) {
-        let dicts = [];
+        let itemsCopy = [];
         for (let d = 0; d < state.rows[r][c].length; ++d) {
-          dicts.push({...state.rows[r][c][d]});
+          itemsCopy.push({...state.rows[r][c][d]});
         }
-        colCopy.push(dicts);
+        colCopy.push(itemsCopy);
       }
-      newRows.push(colCopy);
+      rowsCopy.push(colCopy);
     }
-    return newRows;
+    return rowsCopy;
   };
 
   /*
@@ -70,13 +76,24 @@ class StoryBoard extends React.Component
     const headingsClassNames = [
       styles.column_header,
       stylesCommon.scrollable
-    ].join(' ');
-  
+    ];
+
     return this.state.columnHeadings.map(
-      (colTitle, colIdx) => (
+      (colTitle, colIdx) => {
+        let thisClassName = [...headingsClassNames];
+        if (
+          (this.state.selectedElement.type === "colheader")
+          && (this.state.selectedElement.colIdx === colIdx)
+        )
+        {
+          thisClassName.push(styles.column_header_selected);
+        }
+        return (
           <div
-            className={headingsClassNames}
+            className={thisClassName.join(' ')}
             key={'ch' + colIdx}
+            onClick={() => this.onColumnHeaderClicked(colIdx)}
+            draggable
           >
             {colTitle}
             <div 
@@ -89,7 +106,7 @@ class StoryBoard extends React.Component
               <span role='img' aria-label='delete'>&#128473;</span>
             </div>
           </div>
-      ), this.state.columnHeadings);
+      )}, this.state.columnHeadings);
   };
 
 
@@ -119,7 +136,15 @@ class StoryBoard extends React.Component
           });
         }
         else {
-          // TODO!
+          // There is only one column. Just delete all the tickets in it.
+          let newRows = [];
+          for( let idx = 0; idx < prevState.rows.length; ++idx) {
+            newRows.push([ [] ]);
+          }
+          return ({
+            columnHeadings: ["Title here"],
+            rows: newRows
+          })
         }
       }
     );
@@ -176,7 +201,7 @@ class StoryBoard extends React.Component
           newState.selectedElement = {
             title: '',
             description: '',
-            storypoints: 0,
+            storyPoints: 0,
             type: ElementType.NONE,
             rowIdx: -1,
             colIdx: -1,
@@ -238,7 +263,7 @@ class StoryBoard extends React.Component
         newRows[rowIdx][colIdx].push({
           title: '',
           description: '',
-          storypoints: 0,
+          storyPoints: 0,
         });
 
         return ({
@@ -260,17 +285,31 @@ class StoryBoard extends React.Component
    */
   onItemClicked = (rowIdx, colIdx, itemIdx) => {
     this.setState(
-      (prevState, props) => ({
-        selectedElement: {
-          title: prevState.rows[rowIdx][colIdx][itemIdx].title,
-          description: prevState.rows[rowIdx][colIdx][itemIdx].description,
-          storypoints: prevState.rows[rowIdx][colIdx][itemIdx].storypoints,
-          type: ElementType.ITEM,
-          rowIdx: rowIdx,
-          colIdx: colIdx,
-          itemIdx: itemIdx,
-        }
-      }));
+      (prevState, props) =>{ 
+        return 'title' in prevState.rows[rowIdx][colIdx][itemIdx]  ?
+          ({
+            selectedElement: {
+              title: prevState.rows[rowIdx][colIdx][itemIdx].title,
+              description: prevState.rows[rowIdx][colIdx][itemIdx].description,
+              storyPoints: prevState.rows[rowIdx][colIdx][itemIdx].storyPoints,
+              type: ElementType.ITEM,
+              rowIdx: rowIdx,
+              colIdx: colIdx,
+              itemIdx: itemIdx,
+            }
+          }) :
+          ({
+            selectedElement: {
+              title: '',
+              description: '',
+              storyPoints: '',
+              type: ElementType.ITEM,
+              rowIdx: rowIdx,
+              colIdx: colIdx,
+              itemIdx: itemIdx,
+            }
+          })
+        });
   };
 
 
@@ -284,7 +323,7 @@ class StoryBoard extends React.Component
         selectedElement: {
           title: prevState.rowHeadings[rowIdx],
           description: '',
-          storypoints: '',
+          storyPoints: '',
           type: ElementType.ROWHEADER,
           rowIdx: rowIdx,
           colIdx:-1,
@@ -295,6 +334,30 @@ class StoryBoard extends React.Component
 
 
   /*
+   *
+   */
+  onColumnHeaderClicked = (colIdx) => {
+    this.setState(
+      (prevState, props) => ({
+        selectedElement: {
+          title: prevState.columnHeadings[colIdx],
+          description: '',
+          storyPoints: 0,
+          type: ElementType.COLHEADER,
+          rowIdx: -1,
+          colIdx: colIdx,
+          itemIdx: -1,
+        }
+      }));
+  }
+
+
+
+  /************************************************************************************************
+   * PROPERTY WINDOW UPDATE EVENTS
+   */
+
+   /*
    *
    */
   prop_title_change = (evt) => {
@@ -319,6 +382,17 @@ class StoryBoard extends React.Component
       newPropWin.title = evt.target.value;
       this.setState({
         rowHeadings: newHeaders,
+        selectedElement: newPropWin
+      })
+    }
+    else if (this.state.selectedElement.type === ElementType.COLHEADER)
+    {
+      let newHeaders = [...this.state.columnHeadings]
+      newHeaders[this.state.selectedElement.colIdx] = evt.target.value;
+      let newPropWin = {...this.state.selectedElement};
+      newPropWin.title = evt.target.value;
+      this.setState({
+        columnHeadings: newHeaders,
         selectedElement: newPropWin
       })
     }
@@ -355,7 +429,7 @@ class StoryBoard extends React.Component
       let newRows = this.deepCopyStateRows(this.state);
       newRows[this.state.selectedElement.rowIdx]
              [this.state.selectedElement.colIdx]
-             [this.state.selectedElement.itemIdx].storypoints = evt.target.value;
+             [this.state.selectedElement.itemIdx].storyPoints = evt.target.value;
       let newPropWin = {...this.state.selectedElement};
       newPropWin.storyPoints = evt.target.value;
       this.setState({
@@ -388,6 +462,13 @@ class StoryBoard extends React.Component
             onItemClick={this.onItemClicked}
             onRowHeaderClick={this.onRowHeaderClicked}
             onDeleteRowClick={this.deleteRow}
+            selection={
+              this.state.selectedElement.rowIdx === rowheadIdx 
+                ? [this.state.selectedElement.type, 
+                   this.state.selectedElement.colIdx,
+                   this.state.selectedElement.itemIdx]
+                : null
+            }
           />
       )});
 
