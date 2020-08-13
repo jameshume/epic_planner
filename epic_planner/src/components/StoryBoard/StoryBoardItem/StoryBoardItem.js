@@ -22,7 +22,6 @@ const storyBoardItem = props => {
   <div 
     className={itemStyle.join(' ')}
     onClick={()=>props.onItemClick(props.row_idx, props.col_idx, props.item_idx)}
-    draggable
     onDragStart = {
       (evt) => {
         //evt.stopPropagation();

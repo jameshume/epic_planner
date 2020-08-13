@@ -94,7 +94,6 @@ class StoryBoard extends React.Component
             className={thisClassName.join(' ')}
             key={'ch' + colIdx}
             onClick={() => this.onColumnHeaderClicked(colIdx)}
-            draggable
           >
             {colTitle}
             <div 
@@ -458,9 +457,32 @@ class StoryBoard extends React.Component
         }
       );
     }
+    else if (this.state.selectedElement.rowIdx > 0) {
+      this.setState(
+        (prevState, props) => {
+          const selEl = prevState.selectedElement;
+          let newRows = this.deepCopyStateRows(prevState);
+          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+
+          let nextRowCol = newRows[selEl.rowIdx - 1][selEl.colIdx];
+          nextRowCol.push(deletedEl[0]);
+
+          let newSelEl = {...selEl}
+          newSelEl.itemIdx = nextRowCol.length - 1;
+          newSelEl.rowIdx -= 1;
+
+
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }
+      );
+    }
   };
 
-  moveSelectedItemDown = () => {    
+  moveSelectedItemDown = () => {
     this.setState(
       (prevState, props) => {
         const selEl = prevState.selectedElement;
@@ -500,21 +522,67 @@ class StoryBoard extends React.Component
     );
   };
 
+  moveSelectedItemRight = () => {
+    if(this.state.selectedElement.colIdx < this.state.columnHeadings.length - 1) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
+          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+
+          newRows[selEl.rowIdx][selEl.colIdx + 1].push(deletedEl[0]);
+          let newSelEl = {...selEl};
+          newSelEl.itemIdx = newRows[selEl.rowIdx][selEl.colIdx + 1].length - 1;
+          newSelEl.colIdx += 1;
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };    
+        }
+      );
+    }
+  };
+
+  moveSelectedItemLeft = () => {
+    if(this.state.selectedElement.colIdx > 0) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
+          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+
+          newRows[selEl.rowIdx][selEl.colIdx - 1].push(deletedEl[0]);
+          let newSelEl = {...selEl};
+          newSelEl.itemIdx = newRows[selEl.rowIdx][selEl.colIdx - 1].length - 1;
+          newSelEl.colIdx -= 1;
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };    
+        }
+      );
+    }
+  };
+
+  moveColumnRight = () => {
+
+  }
+
   arrowPadClick = (arrowName) => {
     if (this.state.selectedElement.type === ElementType.ITEM) {
       if (arrowName === ArrowsEnum.UP) {
-        console.log("UP")
         this.moveSelectedItemUp();
       }
       else if (arrowName === ArrowsEnum.DOWN) {
-        console.log("DOWN")
         this.moveSelectedItemDown();
       }
       else if (arrowName === ArrowsEnum.LEFT) {
-        console.log("LEFT")
+        this.moveSelectedItemLeft();
       }
       else if (arrowName === ArrowsEnum.RIGHT) {
-        console.log("RIGHT")
+        this.moveSelectedItemRight();
       }
     }
   };
