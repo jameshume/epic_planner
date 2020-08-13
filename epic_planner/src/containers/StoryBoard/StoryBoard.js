@@ -3,6 +3,7 @@ import React from 'react';
 import styles from './StoryBoard.module.css';
 import stylesCommon from '../../common/StoryBoardCommon.module.css';
 import StoryBoardRow from '../../components/StoryBoard/StoryBoardRow/StoryBoardRow.js';
+import {ArrowPad, ArrowsEnum} from '../../components/ArrowPad/ArrowPad.js';
 
 const ElementType = {
   NONE: 'none',
@@ -439,6 +440,85 @@ class StoryBoard extends React.Component
     }    
   };
 
+  moveSelectedItemUp = () => {
+    if(this.state.selectedElement.itemIdx > 0) {
+      this.setState(
+        (prevState, props) => {
+          const selEl = prevState.selectedElement;
+          let newRows = this.deepCopyStateRows(prevState);
+          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+          selRowCol.splice(selEl.itemIdx-1, 0, deletedEl[0]);
+          let newSelEl = {...selEl}
+          newSelEl.itemIdx -= 1;
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }
+      );
+    }
+  };
+
+  moveSelectedItemDown = () => {    
+    this.setState(
+      (prevState, props) => {
+        const selEl = prevState.selectedElement;
+        let selRowCol = prevState.rows[selEl.rowIdx][selEl.colIdx];
+
+        if (selEl.itemIdx < selRowCol.length - 1)
+        {
+          let newRows = this.deepCopyStateRows(prevState);
+          selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+          selRowCol.splice(selEl.itemIdx+1, 0, deletedEl[0]);
+          let newSelEl = {...selEl}
+          newSelEl.itemIdx += 1;
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }
+        else if (selEl.rowIdx < prevState.rowHeadings.length - 1) {
+          let newRows = this.deepCopyStateRows(prevState);
+          selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+          let nextRowCol = newRows[selEl.rowIdx + 1][selEl.colIdx];
+          nextRowCol.splice(0, 0, deletedEl[0]);
+          let newSelEl = {...selEl};
+          newSelEl.itemIdx = 0;
+          newSelEl.rowIdx += 1;
+          return {
+            rows: newRows,
+            selectedElement: newSelEl 
+          };          
+        }
+        else {
+          return { };
+        }
+      }
+    );
+  };
+
+  arrowPadClick = (arrowName) => {
+    if (this.state.selectedElement.type === ElementType.ITEM) {
+      if (arrowName === ArrowsEnum.UP) {
+        console.log("UP")
+        this.moveSelectedItemUp();
+      }
+      else if (arrowName === ArrowsEnum.DOWN) {
+        console.log("DOWN")
+        this.moveSelectedItemDown();
+      }
+      else if (arrowName === ArrowsEnum.LEFT) {
+        console.log("LEFT")
+      }
+      else if (arrowName === ArrowsEnum.RIGHT) {
+        console.log("RIGHT")
+      }
+    }
+  };
+
   /*
    *
    */
@@ -503,6 +583,8 @@ class StoryBoard extends React.Component
             value={this.state.selectedElement.storyPoints}
             onChange={this.prop_storypoints_change}
           />
+
+          <ArrowPad clicked={this.arrowPadClick}/>
         </div>
       </React.Fragment>  
     );

@@ -1,0 +1,38 @@
+.ArrowPad {
+  margin: 1rem;
+  display:               grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows:    1fr 1fr 1fr;
+  font-size: 2rem;
+}
+
+.ArrowPad > div {
+  font-weight: bolder;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.ArrowPad > div:hover {
+  border: 1px solid red;
+  background-color: rgb(172, 122, 122);
+}
+
+.UpArrow {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
+
+.LeftArrow {
+  grid-column-start: 1;
+  grid-row-start: 2;
+}
+
+.RightArrow {
+  grid-column-start: 3;
+  grid-row-start: 2;
+}
+
+.DownArrow {
+  grid-column-start: 2;
+  grid-row-start: 3;
+}
