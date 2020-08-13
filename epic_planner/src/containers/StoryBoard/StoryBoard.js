@@ -24,7 +24,7 @@ class StoryBoard extends React.Component
   state = {
     columnHeadings: ["Type title here"],
     rowHeadings: ["Type title here"],
-    /* Rows is a 3D array: rows[row][col][item] */
+    /* Rows is a 3D array: rows[row][col][item] -> Dict*/
     rows: [   /*<< List of lists. Each inner list represents a row. */
       [       /*<< This inner list represents the first row - the must always be at least 1 blank row */
         [     /*<< The row will be a list of columns, where each column is also a list */
@@ -52,7 +52,7 @@ class StoryBoard extends React.Component
    * deep copied so that state is not directly modified.
    * 
    * TODO: This seems like a rather inefficient thing to have to do. Perhaps there is
-   * a way to work around this?
+   * a way to work around this or better way to do it?!
    */
   deepCopyStateRows = (state) => {
     let rowsCopy = [];
@@ -566,9 +566,133 @@ class StoryBoard extends React.Component
     }
   };
 
-  moveColumnRight = () => {
+  moveSelectedColumnRight = () => {
+    if(this.state.selectedElement.colIdx < this.state.columnHeadings.length - 1) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
 
+          // Move the columns heading
+          let newColHeadings = [...prevState.columnHeadings];
+          const deletedColHead = newColHeadings.splice(selEl.colIdx, 1);
+          newColHeadings.splice(selEl.colIdx + 1, 0, deletedColHead[0]);
+
+          // Now move the column.
+          // rows[rowIdx][colIdx] is a list of items. For each row the
+          // column needs to move right by one
+          for(let rowIdx = 0; rowIdx < newRows.length; ++rowIdx) {
+            const deletedEl = newRows[rowIdx].splice(selEl.colIdx, 1);
+            newRows[rowIdx].splice(selEl.colIdx + 1, 0, deletedEl[0]);
+          }
+
+          let newSelEl = {...selEl};
+          newSelEl.colIdx += 1;
+
+          return {
+            columnHeadings: newColHeadings,
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }   
+      );
+    }
   }
+
+  moveSelectedColumnLeft = () => {
+    if(this.state.selectedElement.colIdx > 0) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
+
+          // Move the columns heading
+          let newColHeadings = [...prevState.columnHeadings];
+          const deletedColHead = newColHeadings.splice(selEl.colIdx, 1);
+          newColHeadings.splice(selEl.colIdx - 1, 0, deletedColHead[0]);
+
+          // Now move the column.
+          // rows[rowIdx][colIdx] is a list of items. For each row the
+          // column needs to move right by one
+          for(let rowIdx = 0; rowIdx < newRows.length; ++rowIdx) {
+            const deletedEl = newRows[rowIdx].splice(selEl.colIdx, 1);
+            newRows[rowIdx].splice(selEl.colIdx - 1, 0, deletedEl[0]);
+          }
+
+          let newSelEl = {...selEl};
+          newSelEl.colIdx -= 1;
+
+          return {
+            columnHeadings: newColHeadings,
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }   
+      );
+    }
+  };
+
+  moveSelectedRowUp = () => {
+    if(this.state.selectedElement.rowIdx > 0) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
+
+          // Move the row heading
+          let newRowHeadings = [...prevState.rowHeadings];
+          const deletedRowHead = newRowHeadings.splice(selEl.rowIdx, 1);
+          newRowHeadings.splice(selEl.rowIdx - 1, 0, deletedRowHead[0]);
+
+          // Move the row
+          const deletedEl = newRows.splice(selEl.rowIdx, 1);
+          newRows.splice(selEl.rowIdx - 1, 0, deletedEl[0]);
+
+          // Update the selected element
+          let newSelEl = {...selEl};
+          newSelEl.rowIdx -= 1;
+
+          // Return a new partial state
+          return {
+            rowHeadings: newRowHeadings,
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }
+      );
+    }
+  };
+
+  moveSelectedRowDown = () => {
+    if(this.state.selectedElement.rowIdx < this.state.rowHeadings.length - 1) {
+      this.setState(
+        (prevState, props) => {
+          let newRows = this.deepCopyStateRows(prevState);
+          const selEl = prevState.selectedElement;
+
+          // Move the row heading
+          let newRowHeadings = [...prevState.rowHeadings];
+          const deletedRowHead = newRowHeadings.splice(selEl.rowIdx, 1);
+          newRowHeadings.splice(selEl.rowIdx + 1, 0, deletedRowHead[0]);
+
+          // Move the row
+          const deletedEl = newRows.splice(selEl.rowIdx, 1);
+          newRows.splice(selEl.rowIdx + 1, 0, deletedEl[0]);
+
+          // Update the selected element
+          let newSelEl = {...selEl};
+          newSelEl.rowIdx += 1;
+
+          // Return a new partial state
+          return {
+            rowHeadings: newRowHeadings,
+            rows: newRows,
+            selectedElement: newSelEl 
+          };
+        }
+      );
+    }
+  };
 
   arrowPadClick = (arrowName) => {
     if (this.state.selectedElement.type === ElementType.ITEM) {
@@ -583,6 +707,22 @@ class StoryBoard extends React.Component
       }
       else if (arrowName === ArrowsEnum.RIGHT) {
         this.moveSelectedItemRight();
+      }
+    }
+    else if (this.state.selectedElement.type === ElementType.COLHEADER) {
+      if (arrowName === ArrowsEnum.LEFT) {
+        this.moveSelectedColumnLeft();
+      }
+      else if (arrowName === ArrowsEnum.RIGHT) {
+        this.moveSelectedColumnRight();
+      }
+    }
+    else if (this.state.selectedElement.type === ElementType.ROWHEADER) {
+      if (arrowName === ArrowsEnum.UP) {
+        this.moveSelectedRowUp();
+      }
+      else if (arrowName === ArrowsEnum.DOWN) {
+        this.moveSelectedRowDown();
       }
     }
   };
