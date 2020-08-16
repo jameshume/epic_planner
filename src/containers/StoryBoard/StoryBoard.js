@@ -1,16 +1,20 @@
-// TODO - THIS NEEDS A WHILE LOAD OF CLEANUP!!!!
 import React from 'react';
 import styles from './StoryBoard.module.css';
 import stylesCommon from '../../common/StoryBoardCommon.module.css';
 import StoryBoardRow from '../../components/StoryBoard/StoryBoardRow/StoryBoardRow.js';
-import {ArrowPad, ArrowsEnum} from '../../components/ArrowPad/ArrowPad.js';
+import {ArrowsEnum} from '../../components/ArrowPad/ArrowPad.js';
+import PropertiesBar from '../../components/PropertiesBar/PropertiesBar'
 
-const ElementType = {
+
+/*
+ *
+ */
+const ElementType = Object.freeze({
   NONE: 'none',
   ITEM: 'item',
   COLHEADER: 'colheader',
   ROWHEADER: 'rowheader',
-}
+});
 
 
 /*
@@ -21,6 +25,9 @@ const ElementType = {
  */
 class StoryBoard extends React.Component
 {
+  /************************************************************************************************
+   * STATE
+   */
   state = {
     columnHeadings: ["Type title here"],
     rowHeadings: ["Type title here"],
@@ -70,44 +77,17 @@ class StoryBoard extends React.Component
     return rowsCopy;
   };
 
-  /*
-   *
-   */
-  renderColumnHeadings = () => {
-    const headingsClassNames = [
-      styles.column_header,
-      stylesCommon.scrollable
-    ];
 
-    return this.state.columnHeadings.map(
-      (colTitle, colIdx) => {
-        let thisClassName = [...headingsClassNames];
-        if (
-          (this.state.selectedElement.type === "colheader")
-          && (this.state.selectedElement.colIdx === colIdx)
-        )
-        {
-          thisClassName.push(styles.column_header_selected);
-        }
-        return (
-          <div
-            className={thisClassName.join(' ')}
-            key={'ch' + colIdx}
-            onClick={() => this.onColumnHeaderClicked(colIdx)}
-          >
-            {colTitle}
-            <div 
-              className={styles.delete_button}
-              onClick={(e) => {e.stopPropagation(); 
-                               this.deleteColumn(colIdx);
-                              }
-                      }
-            >
-              <span role='img' aria-label='delete'>&#128473;</span>
-            </div>
-          </div>
-      )}, this.state.columnHeadings);
-  };
+
+  /************************************************************************************************
+   * AUXILLARY FUNCTIONS
+   */
+  moveArrayElement = (origArray, elementIndex, moveOffset) => {
+    let newArray = [...origArray];
+    const deletedElement = newArray.splice(elementIndex, 1)[0];
+    newArray.splice(elementIndex + moveOffset, 0, deletedElement);
+    return newArray;
+  }
 
 
 
@@ -358,8 +338,8 @@ class StoryBoard extends React.Component
    */
 
    /*
-   *
-   */
+    *
+    */
   prop_title_change = (evt) => {
     if (this.state.selectedElement.type === ElementType.ITEM)
     {
@@ -418,6 +398,7 @@ class StoryBoard extends React.Component
     }    
   }
 
+
   /*
    *
    */
@@ -439,293 +420,254 @@ class StoryBoard extends React.Component
     }    
   };
 
-  moveSelectedItemUp = () => {
-    if(this.state.selectedElement.itemIdx > 0) {
-      this.setState(
-        (prevState, props) => {
-          const selEl = prevState.selectedElement;
-          let newRows = this.deepCopyStateRows(prevState);
-          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
-          selRowCol.splice(selEl.itemIdx-1, 0, deletedEl[0]);
-          let newSelEl = {...selEl}
-          newSelEl.itemIdx -= 1;
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }
-      );
-    }
-    else if (this.state.selectedElement.rowIdx > 0) {
-      this.setState(
-        (prevState, props) => {
-          const selEl = prevState.selectedElement;
-          let newRows = this.deepCopyStateRows(prevState);
-          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
 
-          let nextRowCol = newRows[selEl.rowIdx - 1][selEl.colIdx];
-          nextRowCol.push(deletedEl[0]);
-
-          let newSelEl = {...selEl}
-          newSelEl.itemIdx = nextRowCol.length - 1;
-          newSelEl.rowIdx -= 1;
-
-
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }
-      );
-    }
-  };
-
-  moveSelectedItemDown = () => {
-    this.setState(
-      (prevState, props) => {
-        const selEl = prevState.selectedElement;
-        let selRowCol = prevState.rows[selEl.rowIdx][selEl.colIdx];
-
-        if (selEl.itemIdx < selRowCol.length - 1)
-        {
-          let newRows = this.deepCopyStateRows(prevState);
-          selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
-          selRowCol.splice(selEl.itemIdx+1, 0, deletedEl[0]);
-          let newSelEl = {...selEl}
-          newSelEl.itemIdx += 1;
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }
-        else if (selEl.rowIdx < prevState.rowHeadings.length - 1) {
-          let newRows = this.deepCopyStateRows(prevState);
-          selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
-          let nextRowCol = newRows[selEl.rowIdx + 1][selEl.colIdx];
-          nextRowCol.splice(0, 0, deletedEl[0]);
-          let newSelEl = {...selEl};
-          newSelEl.itemIdx = 0;
-          newSelEl.rowIdx += 1;
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };          
-        }
-        else {
-          return { };
-        }
-      }
-    );
-  };
-
-  moveSelectedItemRight = () => {
-    if(this.state.selectedElement.colIdx < this.state.columnHeadings.length - 1) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
-
-          newRows[selEl.rowIdx][selEl.colIdx + 1].push(deletedEl[0]);
-          let newSelEl = {...selEl};
-          newSelEl.itemIdx = newRows[selEl.rowIdx][selEl.colIdx + 1].length - 1;
-          newSelEl.colIdx += 1;
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };    
-        }
-      );
-    }
-  };
-
-  moveSelectedItemLeft = () => {
-    if(this.state.selectedElement.colIdx > 0) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-          let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
-          const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
-
-          newRows[selEl.rowIdx][selEl.colIdx - 1].push(deletedEl[0]);
-          let newSelEl = {...selEl};
-          newSelEl.itemIdx = newRows[selEl.rowIdx][selEl.colIdx - 1].length - 1;
-          newSelEl.colIdx -= 1;
-          return {
-            rows: newRows,
-            selectedElement: newSelEl 
-          };    
-        }
-      );
-    }
-  };
-
-  moveSelectedColumnRight = () => {
-    if(this.state.selectedElement.colIdx < this.state.columnHeadings.length - 1) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-
-          // Move the columns heading
-          let newColHeadings = [...prevState.columnHeadings];
-          const deletedColHead = newColHeadings.splice(selEl.colIdx, 1);
-          newColHeadings.splice(selEl.colIdx + 1, 0, deletedColHead[0]);
-
-          // Now move the column.
-          // rows[rowIdx][colIdx] is a list of items. For each row the
-          // column needs to move right by one
-          for(let rowIdx = 0; rowIdx < newRows.length; ++rowIdx) {
-            const deletedEl = newRows[rowIdx].splice(selEl.colIdx, 1);
-            newRows[rowIdx].splice(selEl.colIdx + 1, 0, deletedEl[0]);
-          }
-
-          let newSelEl = {...selEl};
-          newSelEl.colIdx += 1;
-
-          return {
-            columnHeadings: newColHeadings,
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }   
-      );
-    }
-  }
-
-  moveSelectedColumnLeft = () => {
-    if(this.state.selectedElement.colIdx > 0) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-
-          // Move the columns heading
-          let newColHeadings = [...prevState.columnHeadings];
-          const deletedColHead = newColHeadings.splice(selEl.colIdx, 1);
-          newColHeadings.splice(selEl.colIdx - 1, 0, deletedColHead[0]);
-
-          // Now move the column.
-          // rows[rowIdx][colIdx] is a list of items. For each row the
-          // column needs to move right by one
-          for(let rowIdx = 0; rowIdx < newRows.length; ++rowIdx) {
-            const deletedEl = newRows[rowIdx].splice(selEl.colIdx, 1);
-            newRows[rowIdx].splice(selEl.colIdx - 1, 0, deletedEl[0]);
-          }
-
-          let newSelEl = {...selEl};
-          newSelEl.colIdx -= 1;
-
-          return {
-            columnHeadings: newColHeadings,
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }   
-      );
-    }
-  };
-
-  moveSelectedRowUp = () => {
-    if(this.state.selectedElement.rowIdx > 0) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-
-          // Move the row heading
-          let newRowHeadings = [...prevState.rowHeadings];
-          const deletedRowHead = newRowHeadings.splice(selEl.rowIdx, 1);
-          newRowHeadings.splice(selEl.rowIdx - 1, 0, deletedRowHead[0]);
-
-          // Move the row
-          const deletedEl = newRows.splice(selEl.rowIdx, 1);
-          newRows.splice(selEl.rowIdx - 1, 0, deletedEl[0]);
-
-          // Update the selected element
-          let newSelEl = {...selEl};
-          newSelEl.rowIdx -= 1;
-
-          // Return a new partial state
-          return {
-            rowHeadings: newRowHeadings,
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }
-      );
-    }
-  };
-
-  moveSelectedRowDown = () => {
-    if(this.state.selectedElement.rowIdx < this.state.rowHeadings.length - 1) {
-      this.setState(
-        (prevState, props) => {
-          let newRows = this.deepCopyStateRows(prevState);
-          const selEl = prevState.selectedElement;
-
-          // Move the row heading
-          let newRowHeadings = [...prevState.rowHeadings];
-          const deletedRowHead = newRowHeadings.splice(selEl.rowIdx, 1);
-          newRowHeadings.splice(selEl.rowIdx + 1, 0, deletedRowHead[0]);
-
-          // Move the row
-          const deletedEl = newRows.splice(selEl.rowIdx, 1);
-          newRows.splice(selEl.rowIdx + 1, 0, deletedEl[0]);
-
-          // Update the selected element
-          let newSelEl = {...selEl};
-          newSelEl.rowIdx += 1;
-
-          // Return a new partial state
-          return {
-            rowHeadings: newRowHeadings,
-            rows: newRows,
-            selectedElement: newSelEl 
-          };
-        }
-      );
-    }
-  };
-
+  /*
+   *
+   */
   arrowPadClick = (arrowName) => {
     if (this.state.selectedElement.type === ElementType.ITEM) {
-      if (arrowName === ArrowsEnum.UP) {
-        this.moveSelectedItemUp();
+      if ((arrowName === ArrowsEnum.UP) || (arrowName === ArrowsEnum.DOWN)) {
+        this.moveSelectedItemUpOrDown(arrowName);
       }
-      else if (arrowName === ArrowsEnum.DOWN) {
-        this.moveSelectedItemDown();
-      }
-      else if (arrowName === ArrowsEnum.LEFT) {
-        this.moveSelectedItemLeft();
-      }
-      else if (arrowName === ArrowsEnum.RIGHT) {
-        this.moveSelectedItemRight();
+      else
+      {
+        this.moveSelectedItemLeftOrRight(arrowName);
       }
     }
     else if (this.state.selectedElement.type === ElementType.COLHEADER) {
-      if (arrowName === ArrowsEnum.LEFT) {
-        this.moveSelectedColumnLeft();
-      }
-      else if (arrowName === ArrowsEnum.RIGHT) {
-        this.moveSelectedColumnRight();
-      }
+      this.moveSelectedColumnRightOrLeft(arrowName);
     }
     else if (this.state.selectedElement.type === ElementType.ROWHEADER) {
-      if (arrowName === ArrowsEnum.UP) {
-        this.moveSelectedRowUp();
-      }
-      else if (arrowName === ArrowsEnum.DOWN) {
-        this.moveSelectedRowDown();
-      }
+      this.moveSelectedRowUpOrDown(arrowName);
     }
   };
+
+
+  /************************************************************************************************
+   * FUNCTIONS TO MOVE BOXES AROUND GRID
+   */
+
+   /*
+   *
+   */
+  moveSelectedItemUpOrDownWithinRow = (prevState, moveDirection) => {
+    const moveUnit = (moveDirection === ArrowsEnum.UP) ? -1 : +1;
+    const prevSelEl = prevState.selectedElement;
+    let copiedRows = this.deepCopyStateRows(prevState);
+    let copiedSelRowAndCol = copiedRows[prevSelEl.rowIdx][prevSelEl.colIdx];
+    const deletedEl = copiedSelRowAndCol.splice(prevSelEl.itemIdx, 1)[0];
+    copiedSelRowAndCol.splice(prevSelEl.itemIdx + moveUnit, 0, deletedEl);
+    let copiedSelEl = {...prevSelEl};
+    copiedSelEl.itemIdx += moveUnit;
+    return {
+      rows: copiedRows,
+      selectedElement: copiedSelEl 
+    };
+  };
+
+
+  /*
+   *
+   */
+  moveSelectedItemUpOrDownBetweenRows = (prevState, moveDirection) => {
+    const moveUnit = (moveDirection === ArrowsEnum.UP) ? -1 : +1;
+    const prevSelEl = prevState.selectedElement;
+    let copiedRows = this.deepCopyStateRows(prevState);
+    let copiedRowCol = copiedRows[prevSelEl.rowIdx][prevSelEl.colIdx];
+    
+    const deletedEl = copiedRowCol.splice(prevSelEl.itemIdx, 1)[0];
+    let nextRowCol = copiedRows[prevSelEl.rowIdx + moveUnit][prevSelEl.colIdx];
+    nextRowCol.push(deletedEl);
+
+    let copiedSelEl = {...prevSelEl}
+    copiedSelEl.itemIdx = nextRowCol.length - 1;
+    copiedSelEl.rowIdx += moveUnit;
+
+    return {
+      rows: copiedRows,
+      selectedElement: copiedSelEl 
+    };
+  };
+
+
+  /*
+   *
+   */
+  moveSelectedItemUpOrDown = (moveDirection) => {
+    this.setState( (prevState, props) => {
+      const prevSelEl = prevState.selectedElement;
+      const prevSelRowCol = prevState.rows[prevSelEl.rowIdx][prevSelEl.colIdx];
+
+      const canMoveWithinRow = (moveDirection === ArrowsEnum.UP)
+        ? (prevSelEl.itemIdx > 0)
+        : (prevSelEl.itemIdx < prevSelRowCol.length - 1)
+
+      if (canMoveWithinRow)
+      {
+        return this.moveSelectedItemUpOrDownWithinRow(prevState, moveDirection);
+      }
+      else {
+        const canMoveBetweenRows = (moveDirection === ArrowsEnum.UP)
+          ? (prevSelEl.rowIdx > 0)
+          : (prevSelEl.rowIdx < prevState.rowHeadings.length - 1);
+
+        if (canMoveBetweenRows)
+        {
+          return this.moveSelectedItemUpOrDownBetweenRows(prevState, moveDirection);
+        }
+      }
+    });
+  };
+
+
+  /*
+   *
+   */
+  moveSelectedItemLeftOrRight = (moveDirection) => {
+    this.setState( (prevState, props) => {
+      const canMove = (moveDirection === ArrowsEnum.LEFT)
+        ? (prevState.selectedElement.colIdx > 0)
+        : (prevState.selectedElement.colIdx < prevState.columnHeadings.length - 1);
+      const moveUnit = (moveDirection === ArrowsEnum.LEFT) ? -1 : +1;
+
+      if(canMove) {
+        let newRows = this.deepCopyStateRows(prevState);
+        const selEl = prevState.selectedElement;
+        let selRowCol = newRows[selEl.rowIdx][selEl.colIdx];
+        const deletedEl = selRowCol.splice(selEl.itemIdx, 1);
+
+        newRows[selEl.rowIdx][selEl.colIdx + moveUnit].push(deletedEl[0]);
+        let newSelEl = {...selEl};
+        newSelEl.itemIdx = newRows[selEl.rowIdx][selEl.colIdx + moveUnit].length - 1;
+        newSelEl.colIdx += moveUnit;
+        return {
+          rows: newRows,
+          selectedElement: newSelEl 
+        };    
+      }      
+    });
+  };
+
+
+  /*
+   *
+   */
+  moveSelectedColumnRightOrLeft = (moveDirection) => {
+    this.setState( (prevState, props) => {
+      const canMove = (moveDirection === ArrowsEnum.LEFT)
+        ? (prevState.selectedElement.colIdx > 0)
+        : (prevState.selectedElement.colIdx < prevState.columnHeadings.length - 1);
+      const colMoveUnit = (moveDirection === ArrowsEnum.LEFT) ? -1 : +1;
+      
+      if(canMove) {
+        let newRows = this.deepCopyStateRows(prevState);
+        const selEl = prevState.selectedElement;
+
+        // Move the column heading
+        const newColHeadings = this.moveArrayElement(
+          prevState.columnHeadings, selEl.colIdx, colMoveUnit);
+        
+        // Move the column
+        for(let rowIdx = 0; rowIdx < newRows.length; ++rowIdx) {
+          const deletedEl = newRows[rowIdx].splice(selEl.colIdx, 1);
+          newRows[rowIdx].splice(selEl.colIdx + colMoveUnit, 0, deletedEl[0]);
+        }
+
+        // Update selected element
+        let newSelEl = {...selEl};
+        newSelEl.colIdx = newSelEl.colIdx + colMoveUnit;
+
+        return {
+          columnHeadings: newColHeadings,
+          rows: newRows,
+          selectedElement: newSelEl 
+        };
+      }   
+    });
+  };
+
+
+  /*
+   *
+   */
+  moveSelectedRowUpOrDown = (moveDirection) => {
+    this.setState( (prevState, props) => {
+      const canMove = 
+        (moveDirection === ArrowsEnum.UP) 
+          ? (prevState.selectedElement.rowIdx > 0) 
+          : (prevState.selectedElement.rowIdx < prevState.rowHeadings.length - 1);
+      const rowMoveUnit = (moveDirection === ArrowsEnum.UP) ? -1 : +1;
+
+      if (canMove) {
+        let newRows = this.deepCopyStateRows(prevState);
+        const selEl = prevState.selectedElement;
+
+        // Move the row heading
+        const newRowHeadings = this.moveArrayElement(
+          prevState.rowHeadings, selEl.rowIdx, rowMoveUnit);
+
+        // Move the row
+        const deletedEl = newRows.splice(selEl.rowIdx, 1);
+        newRows.splice(selEl.rowIdx + rowMoveUnit, 0, deletedEl[0]);
+
+        // Update the selected element
+        let newSelEl = {...selEl};
+        newSelEl.rowIdx = newSelEl.rowIdx + rowMoveUnit;
+
+        return {
+          rowHeadings: newRowHeadings,
+          rows: newRows,
+          selectedElement: newSelEl 
+        };
+      }
+    });
+  };
+
+
+
+  /************************************************************************************************
+   * RENDER FUNCTIONS
+   */
+
+  /*
+   *
+   */
+  renderColumnHeadings = () => {
+    const headingsClassNames = [
+      styles.column_header,
+      stylesCommon.scrollable
+    ];
+
+    return this.state.columnHeadings.map(
+      (colTitle, colIdx) => {
+        let thisClassName = [...headingsClassNames];
+        if (
+          (this.state.selectedElement.type === "colheader")
+          && (this.state.selectedElement.colIdx === colIdx)
+        )
+        {
+          thisClassName.push(styles.column_header_selected);
+        }
+        return (
+          <div
+            className={thisClassName.join(' ')}
+            key={'ch' + colIdx}
+            onClick={() => this.onColumnHeaderClicked(colIdx)}
+          >
+            {colTitle}
+            <div 
+              className={styles.delete_button}
+              onClick={(e) => {e.stopPropagation(); 
+                               this.deleteColumn(colIdx);
+                              }
+                      }
+            >
+              <span role='img' aria-label='delete'>&#128473;</span>
+            </div>
+          </div>
+      )}, this.state.columnHeadings);
+  };
+
 
   /*
    *
@@ -775,37 +717,26 @@ class StoryBoard extends React.Component
           </div>
         </div>
 
-        <div className={styles.properties_panel}>
-          <h1>Properties</h1>
-
-          <div>
-            <label>Title:
-              <textarea
-                value={this.state.selectedElement.title}
-                onChange={this.prop_title_change}/>
-            </label>
-          </div>
-
-          <div>
-            <label>Description:
-              <textarea
-                value={this.state.selectedElement.description}
-                onChange={this.prop_description_change}
-              />
-            </label>
-          </div>
-
-          <div>
-            <label>Story points:
-              <input
-                value={this.state.selectedElement.storyPoints}
-                onChange={this.prop_storypoints_change}
-              />
-            </label>
-          </div>
-
-          <ArrowPad clicked={this.arrowPadClick}/>
-        </div>
+        <PropertiesBar
+          fields={[
+            { el_label: "Title:",
+              el_type: "textarea",
+              el_props: { value:    this.state.selectedElement.title,
+                          onChange: this.prop_title_change },
+            },
+            { el_label: "Description:",
+              el_type: "textarea",
+              el_props: { value:    this.state.selectedElement.description,
+                          onChange: this.prop_description_change },
+            },
+            { el_label: "Story points:",
+              el_type: "input",
+              el_props: { value:    this.state.selectedElement.storyPoints,
+                          onChange: this.prop_storypoints_change },
+            }
+          ]}
+          arrowPadClick={this.arrowPadClick}
+        />
       </React.Fragment>  
     );
   }

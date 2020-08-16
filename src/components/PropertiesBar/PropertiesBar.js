@@ -1,74 +1,41 @@
-import React from 'React';
+import React from 'react';
 import Styles from './PropertiesBar.module.css';
-import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
+import HtmlFormElement from '../HtmlFormElement/HtmlFormElement';
+import {ArrowPad} from '../ArrowPad/ArrowPad';
 
 /* 
  * Props = {
  *     fields : [
  *        {
- *            type: textarea | input 
- *            value:
- *            editable:
- *            visible:
- *            onChange:
+ *            el_type: textarea | input 
+ *            el_props:
+ *            el_label:
  *        }
  *     ],
  *     arrowPadClick : func
- *     
  */
-properiesBar = (props) => {
-
-  props.fields.map(
-    (field, fieldIdx) => {
-      const ElementType =
-      let FieldElement = null;
-      if (field.type === "textarea") {  
-        fieldElement <textarea
-        value={this.state.selectedElement.title}
-        onChange={this.prop_title_change}/>}
-
-      <div>
-        <label>Title:
-         
-        </label>
-    </div>    
-    }
+const propertiesBar = (props) => {
+  const fields = props.fields.map(
+    (field, fieldIdx) => (
+      <div key={fieldIdx}>
+        <HtmlFormElement
+          el_type={field.el_type}
+          el_props={field.el_props} 
+          el_label={field.el_label}
+        />
+      </div>
+    )
   );
 
   return (
-    <div className={styles.properties_panel}>
+    <div className={Styles.propertiesBar}>
       <h1>Properties</h1>
-
-
-
-
       <div>
-        <label>Title:
-          <textarea
-            value={this.state.selectedElement.title}
-            onChange={this.prop_title_change}/>
-        </label>
+        {fields}
       </div>
-
-      <div>
-        <label>Description:
-          <textarea
-            value={this.state.selectedElement.description}
-            onChange={this.prop_description_change}
-          />
-        </label>
-      </div>
-
-      <div>
-        <label>Story points:
-          <input
-            value={this.state.selectedElement.storyPoints}
-            onChange={this.prop_storypoints_change}
-          />
-        </label>
-      </div>
-
-      <ArrowPad clicked={this.arrowPadClick}/>
+      <ArrowPad clicked={props.arrowPadClick}/>
     </div>
-  )
+  );
 }
+
+export default propertiesBar;

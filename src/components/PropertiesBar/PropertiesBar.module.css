@@ -1,0 +1,16 @@
+.propertiesBar {
+  position: fixed;
+  width: 25vw;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  background: rgb(211,211,211);
+  border-left: 1px solid gray;
+  padding: 0px;
+}
+
+h1 {
+  background: rgb(190,190,190);
+  margin-top: 0px;
+  padding: 0.5rem;
+}
