@@ -776,21 +776,33 @@ class StoryBoard extends React.Component
         </div>
 
         <div className={styles.properties_panel}>
-          <p>Properties</p>
-          <label>Title:</label>
-          <textarea
-            value={this.state.selectedElement.title}
-            onChange={this.prop_title_change}/>
-          <label>Description:</label>
-          <textarea
-            value={this.state.selectedElement.description}
-            onChange={this.prop_description_change}
-          />
-          <label>Story points:</label>
-          <input
-            value={this.state.selectedElement.storyPoints}
-            onChange={this.prop_storypoints_change}
-          />
+          <h1>Properties</h1>
+
+          <div>
+            <label>Title:
+              <textarea
+                value={this.state.selectedElement.title}
+                onChange={this.prop_title_change}/>
+            </label>
+          </div>
+
+          <div>
+            <label>Description:
+              <textarea
+                value={this.state.selectedElement.description}
+                onChange={this.prop_description_change}
+              />
+            </label>
+          </div>
+
+          <div>
+            <label>Story points:
+              <input
+                value={this.state.selectedElement.storyPoints}
+                onChange={this.prop_storypoints_change}
+              />
+            </label>
+          </div>
 
           <ArrowPad clicked={this.arrowPadClick}/>
         </div>
