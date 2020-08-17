@@ -1,0 +1,13 @@
+.ModalDialog {
+  position: fixed;
+  z-index: 101;
+  width: 50vw;
+  height: 50vh;
+  top: 25vh;
+  left: 25vw;
+  margin: 0px;
+  border: 5px solid black;
+  border-radius: 5px;
+  box-shadow: black;
+  background: white;
+}

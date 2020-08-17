@@ -13,6 +13,8 @@ import {ArrowPad} from '../ArrowPad/ArrowPad';
  *        }
  *     ],
  *     arrowPadClick : func
+ *     onSaveClick: func
+ *     onLoadClick: func
  */
 const propertiesBar = (props) => {
   const fields = props.fields.map(
@@ -34,6 +36,10 @@ const propertiesBar = (props) => {
         {fields}
       </div>
       <ArrowPad clicked={props.arrowPadClick}/>
+      <div>
+        <button onClick={props.onLoadClick}>Load</button>
+        <button onClick={props.onSaveClick}>Save</button>
+      </div>
     </div>
   );
 }
