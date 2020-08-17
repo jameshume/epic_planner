@@ -477,11 +477,20 @@ class StoryBoard extends React.Component
     
     const deletedEl = copiedRowCol.splice(prevSelEl.itemIdx, 1)[0];
     let nextRowCol = copiedRows[prevSelEl.rowIdx + moveUnit][prevSelEl.colIdx];
-    nextRowCol.push(deletedEl);
-
+    
     let copiedSelEl = {...prevSelEl}
-    copiedSelEl.itemIdx = nextRowCol.length - 1;
     copiedSelEl.rowIdx += moveUnit;
+
+    if (moveDirection === ArrowsEnum.UP) {
+      nextRowCol.push(deletedEl);
+      copiedSelEl.itemIdx = nextRowCol.length - 1;
+    }
+    else {
+      nextRowCol.splice(0, 0, deletedEl);
+      copiedSelEl.itemIdx = 0;
+    }
+
+    
 
     return {
       rows: copiedRows,
