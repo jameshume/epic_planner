@@ -490,8 +490,6 @@ class StoryBoard extends React.Component
       copiedSelEl.itemIdx = 0;
     }
 
-    
-
     return {
       rows: copiedRows,
       selectedElement: copiedSelEl 
