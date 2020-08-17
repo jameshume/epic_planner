@@ -7,6 +7,7 @@
   background: rgb(211,211,211);
   border-left: 1px solid gray;
   padding: 0px;
+  min-width: 180px;
 }
 
 h1 {
