@@ -27,6 +27,16 @@ const ElementType = Object.freeze({
  */
 class StoryBoard extends React.Component
 {
+  UNSELECTED = Object.freeze({
+    title: '',
+    description: '',
+    storyPoints: 0,
+    type: ElementType.NONE,
+    rowIdx: -1,
+    colIdx: -1,
+    itemIdx: -1,
+  });
+
   /************************************************************************************************
    * STATE
    */
@@ -44,18 +54,12 @@ class StoryBoard extends React.Component
     ],
 
     // TODO: This is a conflation of selected element and property window!git 
-    selectedElement: {  /*<< This represents the selected block, a ticket/item, row or column header */
-      title: '',        /*<< The title is the title in the properties window, not the element! */
-      description: '',
-      storyPoints: 0,
-      type: ElementType.NONE,
-      rowIdx: -1,
-      colIdx: -1,
-      itemIdx: -1,
-    },
-
+    /*<< This represents the selected block, a ticket/item, row or column header */
+    /*<< The title is the title in the properties window, not the element! */
+    selectedElement: this.UNSELECTED,
     loadModalVisible: false,
-    saveModalVisible: true,
+    saveModalVisible: false,
+    importData: "",
   }
 
   /*
@@ -707,6 +711,21 @@ class StoryBoard extends React.Component
       )}, this.state.columnHeadings);
   };
 
+  onImportChange = (evt) => {
+    this.setState({importData: evt.target.value});
+  }
+
+  onImportClick = (evt) => {
+    this.setState((prevState, props) => {
+      const data = JSON.parse(prevState.importData);
+      return {
+        rows: data.rows,
+        columnHeadings: data.columnHeadings,
+        rowHeadings: data.rowHeadings,
+        selectedElement: this.UNSELECTED,
+      };
+    });
+  }
 
   /*
    *
@@ -760,8 +779,22 @@ class StoryBoard extends React.Component
         </ModalDialog>
       );
     }
+    else if (this.state.loadModalVisible) {
+      // HACK UNTIL PROPER DIALOG COMPONENT CREATED
+      const txtstyle={width:'100%', height:'90%', padding:0, margin:0, border: 0};
+      modal = (
+        <ModalDialog onClose={this.onModalCloseClick}>
+          <textarea
+            style={txtstyle}
+            onChange={this.onImportChange}
+          >  
+          </textarea>
+          <button onClick={this.onImportClick}>Load</button>
+        </ModalDialog>
+      );      
+    }
 
-    return (    
+    return (
       <React.Fragment>
         {modal}
 
