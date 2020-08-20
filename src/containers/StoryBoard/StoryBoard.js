@@ -4,7 +4,8 @@ import stylesCommon from '../../common/StoryBoardCommon.module.css';
 import StoryBoardRow from '../../components/StoryBoard/StoryBoardRow/StoryBoardRow.js';
 import {ArrowsEnum} from '../../components/ArrowPad/ArrowPad.js';
 import PropertiesBar from '../../components/PropertiesBar/PropertiesBar';
-import ModalDialog from '../../components/ModalDialog/ModalDialog';
+import BasicSaveModal from '../../components/BasicSaveModal/BasicSaveModal';
+import BasicLoadModal from '../../components/BasicLoadModal/BasicLoadModal';
 
 
 
@@ -669,6 +670,28 @@ class StoryBoard extends React.Component
 
 
   /************************************************************************************************
+   * LOAD/STORE FUNCTIONS
+   */
+
+  onImportChange = (evt) => {
+    this.setState({importData: evt.target.value});
+  }
+
+  onImportClick = (evt) => {
+    this.setState((prevState, props) => {
+      const data = JSON.parse(prevState.importData);
+      return {
+        rows: data.rows,
+        columnHeadings: data.columnHeadings,
+        rowHeadings: data.rowHeadings,
+        selectedElement: this.UNSELECTED,
+      };
+    });
+  }
+
+
+
+  /************************************************************************************************
    * RENDER FUNCTIONS
    */
 
@@ -711,21 +734,35 @@ class StoryBoard extends React.Component
       )}, this.state.columnHeadings);
   };
 
-  onImportChange = (evt) => {
-    this.setState({importData: evt.target.value});
-  }
+  /*
+   *
+   */
+  renderLoadSaveModals = () => {
+    let modal = null;
 
-  onImportClick = (evt) => {
-    this.setState((prevState, props) => {
-      const data = JSON.parse(prevState.importData);
-      return {
-        rows: data.rows,
-        columnHeadings: data.columnHeadings,
-        rowHeadings: data.rowHeadings,
-        selectedElement: this.UNSELECTED,
-      };
-    });
-  }
+    if (this.state.saveModalVisible) {
+      const stateAsJSON = JSON.stringify({
+        columnHeadings: this.state.columnHeadings,
+        rowHeadings: this.state.rowHeadings,
+        rows: this.state.rows,
+      });
+      modal = 
+        <BasicSaveModal
+          onModalCloseClick={this.onModalCloseClick}
+          stateAsJSONString={stateAsJSON}
+        />;
+    }
+    else if (this.state.loadModalVisible) {
+      modal =
+        <BasicLoadModal
+          onModalCloseClick={this.onModalCloseClick}
+          onImportChange={this.onImportChange}
+          onImportClick={this.onImportClick}
+        />;
+    }
+
+    return modal;
+  };
 
   /*
    *
@@ -760,43 +797,9 @@ class StoryBoard extends React.Component
           />
       )});
 
-    let modal = null;
-    if (this.state.saveModalVisible) {
-      // HACK UNTIL PROPER DIALOG COMPONENT CREATED
-      const txtstyle={width:'100%', height:'100%', padding:0, margin:0, border: 0};
-      modal = (
-        <ModalDialog onClose={this.onModalCloseClick}>
-          <textarea 
-            style={txtstyle}
-            readOnly={true}
-            value={JSON.stringify({
-              columnHeadings: this.state.columnHeadings,
-              rowHeadings: this.state.rowHeadings,
-              rows: this.state.rows,
-            })}
-          >  
-          </textarea>
-        </ModalDialog>
-      );
-    }
-    else if (this.state.loadModalVisible) {
-      // HACK UNTIL PROPER DIALOG COMPONENT CREATED
-      const txtstyle={width:'100%', height:'90%', padding:0, margin:0, border: 0};
-      modal = (
-        <ModalDialog onClose={this.onModalCloseClick}>
-          <textarea
-            style={txtstyle}
-            onChange={this.onImportChange}
-          >  
-          </textarea>
-          <button onClick={this.onImportClick}>Load</button>
-        </ModalDialog>
-      );      
-    }
-
     return (
       <React.Fragment>
-        {modal}
+        {this.renderLoadSaveModals()}
 
         <div className={styles.board_scrollable_container}>
           <div className={styles.board_grid} style={inline_style}>
