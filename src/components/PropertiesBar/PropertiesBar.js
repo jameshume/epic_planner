@@ -2,20 +2,8 @@ import React from 'react';
 import Styles from './PropertiesBar.module.css';
 import HtmlFormElement from '../HtmlFormElement/HtmlFormElement';
 import {ArrowPad} from '../ArrowPad/ArrowPad';
+import PropTypes from 'prop-types';
 
-/* 
- * Props = {
- *     fields : [
- *        {
- *            el_type: textarea | input 
- *            el_props:
- *            el_label:
- *        }
- *     ],
- *     arrowPadClick : func
- *     onSaveClick: func
- *     onLoadClick: func
- */
 const propertiesBar = (props) => {
   const fields = props.fields.map(
     (field, fieldIdx) => (
@@ -43,5 +31,12 @@ const propertiesBar = (props) => {
     </div>
   );
 }
+
+propertiesBar.propTypes = {
+  onLoadClick: PropTypes.func.isRequired,
+  onSaveClick: PropTypes.func.isRequired,
+  arrowPadClick: PropTypes.func.isRequired,
+  fields: PropTypes.array.isRequired
+};
 
 export default propertiesBar;

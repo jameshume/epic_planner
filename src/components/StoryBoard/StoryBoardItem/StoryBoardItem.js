@@ -1,16 +1,9 @@
 import React from 'react';
 import styles from './StoryBoardItem.module.css';
 import styles_common from '../../../common/StoryBoardCommon.module.css';
+import PropTypes from 'prop-types';
 
 /*
- * \param props.details - A dictionary: {
- *                           'title' : 'some text',
- *                        }
- * \param props.row_idx
- * \param props.col_idx
- * \param props.item_idx
- * onItemClick
- * selection null or list [type, colidx, itemIdx]
  */
 const storyBoardItem = props => {
   let itemStyle = [styles.item, styles_common.scrollable]
@@ -65,5 +58,14 @@ const storyBoardItem = props => {
     {props.details['title']}
   </div>
 )};
+
+storyBoardItem.propTypes = {
+  details: PropTypes.object.isRequired,
+  row_idx: PropTypes.number.isRequired,
+  col_idx: PropTypes.number.isRequired,
+  item_idx: PropTypes.number.isRequired,
+  onItemClick: PropTypes.func.isRequired,
+  selection: PropTypes.array,
+};
 
 export default storyBoardItem;

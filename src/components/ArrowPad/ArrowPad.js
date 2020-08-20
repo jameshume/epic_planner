@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ArrowPad.module.css';
+import PropTypes from 'prop-types';
 
 const ArrowsEnum = Object.freeze({"UP":1, "DOWN":2, "LEFT":3, "RIGHT":4});
 
@@ -19,5 +20,9 @@ const arrowPad = props => (
     </div>
   </div>
 );
+
+arrowPad.propTypes = {
+  clicked: PropTypes.func.isRequired,
+};
 
 export {arrowPad as ArrowPad, ArrowsEnum};

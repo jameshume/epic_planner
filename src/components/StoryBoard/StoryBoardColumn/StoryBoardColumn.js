@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './StoryBoardColumn.module.css';
 import StoryBoardItem from '../StoryBoardItem/StoryBoardItem.js';
+import PropTypes from 'prop-types';
 
 /*
  * \param props.row_idx - the row index. starts at 1. index 0 is the col heading
@@ -38,6 +39,16 @@ const storyBoardColumn = props => {
         </div>
       </div>
     );
+};
+
+storyBoardColumn.propTypes = {
+  row_idx: PropTypes.number.isRequired,
+  col_idx: PropTypes.number.isRequired,
+  items: PropTypes.array.isRequired,
+  onDeleteItemClick: PropTypes.func.isRequired,
+  onItemClick: PropTypes.func.isRequired,
+  onNewItemClick: PropTypes.func.isRequired,
+  selection: PropTypes.array
 };
 
 export default storyBoardColumn;

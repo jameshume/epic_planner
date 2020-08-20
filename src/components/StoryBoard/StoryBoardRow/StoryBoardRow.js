@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './StoryBoardRow.module.css';
 import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
+import PropTypes from 'prop-types';
 
 /*
  * The row is a row in the CSS grid that lays out the story board. The first
@@ -31,17 +32,6 @@ import StoryBoardColumn from '../StoryBoardColumn/StoryBoardColumn.js';
  * grid container. The first element is the row title and the subsequent
  * M elements define the tickets in its row/col.
  * 
- * \param props.title     The title for this row.
- * \param props.row_idx   The index of this row. The rows start at 1 as
- *                        0 is the header row..
- * \param props.columns   A list of columns. Each column is represented
- *                        as a list of items, where each item is a dict.
- * \param props.onNewItemClick
- * \param props.onNewRowClick
- * \param props.onItemClick
- * \param props.onRowHeaderClick
- * onDeleteRowClick
- * selection null or list [type, colidx, itemIdx]
  */
 const storyBoardRow = props => {
   const columns = props.columns.map((col_inf, col_idx) => (
@@ -93,6 +83,18 @@ const storyBoardRow = props => {
       {columns}
     </React.Fragment>
   );
+};
+
+storyBoardRow.propTypes = {
+  title: PropTypes.string.isRequired,
+  row_idx: PropTypes.number.isRequired,
+  columns: PropTypes.array.isRequired,
+  onNewItemClick: PropTypes.func.isRequired,
+  onNewRowClick: PropTypes.func.isRequired,
+  onItemClick: PropTypes.func.isRequired,
+  onRowHeaderClick: PropTypes.func.isRequired,
+  onDeleteRowClick: PropTypes.func.isRequired,
+  selection: PropTypes.array,
 };
 
 export default storyBoardRow;
