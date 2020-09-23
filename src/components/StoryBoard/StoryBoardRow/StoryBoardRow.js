@@ -59,20 +59,20 @@ const storyBoardRow = props => {
   return (
     <React.Fragment>
       <div className={headerStyles.join(' ')}>
-        <div 
+        <div
           className={styles.row_header_title}
           onClick={() => props.onRowHeaderClick(props.row_idx)}
         >
           {props.title}
         </div>
         <div style={s}>
-          <div         
+          <div
             className={styles.row_inserter}
             onClick={() => props.onNewRowClick(props.row_idx)}
           >
             <span role='img' aria-label='insert new row'>&#10133;</span>
           </div>
-          <div         
+          <div
             className={styles.row_inserter}
             onClick={() => props.onDeleteRowClick(props.row_idx)}
           >
