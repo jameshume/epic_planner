@@ -4,6 +4,7 @@ import HtmlFormElement from '../HtmlFormElement/HtmlFormElement';
 import {ArrowPad} from '../ArrowPad/ArrowPad';
 import PropTypes from 'prop-types';
 
+
 const propertiesBar = (props) => {
   const fields = props.fields.map(
     (field, fieldIdx) => (

@@ -655,6 +655,12 @@ class StoryBoard extends React.Component
   };
 
   onPropertiesLoadClick = () => {
+    const fs = window.require('fs');
+    fs.readdir(".", (err, files) => {
+      files.forEach(file => {
+        console.log(file);
+      });
+    });
     this.setState({loadModalVisible: true});
   };
 
@@ -679,13 +685,18 @@ class StoryBoard extends React.Component
 
   onImportClick = (evt) => {
     this.setState((prevState, props) => {
-      const data = JSON.parse(prevState.importData);
-      return {
-        rows: data.rows,
-        columnHeadings: data.columnHeadings,
-        rowHeadings: data.rowHeadings,
-        selectedElement: this.UNSELECTED,
-      };
+      try {
+        const data = JSON.parse(prevState.importData);
+        return {
+          rows: data.rows,
+          columnHeadings: data.columnHeadings,
+          rowHeadings: data.rowHeadings,
+          selectedElement: this.UNSELECTED,
+        };
+      }
+      catch(error) {
+        alert("Failed to load JSON");
+      }
     });
   }
 
